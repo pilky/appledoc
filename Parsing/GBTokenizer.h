@@ -12,6 +12,10 @@
 @class GBSourceInfo;
 @class GBComment;
 
+typedef enum {
+	GBTokenizerIncludeWhitespace = 1
+} GBTokenizerOptions;
+
 /** Provides common methods for tokenizing input source strings.
  
  Main responsibilities of the class are to split the given source string into tokens and provide simple methods for iterating over the tokens stream. It works upon ParseKit framework's `PKTokenizer`. As different parsers require different tokenizers and setups, the class itself doesn't create a tokenizer, but instead requires the client to provide one. Here's an example of simple usage:
@@ -91,6 +95,7 @@
  @see lookaheadTo:usingBlock:
  */
 - (PKToken *)lookahead:(NSUInteger)offset;
+- (PKToken *)lookahead:(NSUInteger)offset options:(GBTokenizerOptions)options;
 
 /** Enumerates but does not consume all tokens starting at current token up until the given end token is detected.
  
@@ -100,6 +105,7 @@
  @see lookahead:
  */
 - (void)lookaheadTo:(NSString *)end usingBlock:(void (^)(PKToken *token, BOOL *stop))block;
+- (void)lookaheadTo:(NSString *)end options:(GBTokenizerOptions)options usingBlock:(void (^)(PKToken *token, BOOL *stop))block;
 
 /** Consumes the given ammoun of tokens, starting at the current position.
  
@@ -110,6 +116,7 @@
  @see previousComment
  */
 - (void)consume:(NSUInteger)count;
+- (void)consume:(NSUInteger)count options:(GBTokenizerOptions)options;
 
 /** Enumerates and consumes all tokens starting at current token up until the given end token is detected.
  
@@ -122,6 +129,7 @@
  @see previousComment
  */
 - (void)consumeTo:(NSString *)end usingBlock:(void (^)(PKToken *token, BOOL *consume, BOOL *stop))block;
+- (void)consumeTo:(NSString *)end options:(GBTokenizerOptions)options usingBlock:(void (^)(PKToken *token, BOOL *consume, BOOL *stop))block;
 
 /** Enumerates and consumes all tokens starting at current token up until the given end token is detected.
  
@@ -135,6 +143,7 @@
  @see previousComment
  */
 - (void)consumeFrom:(NSString *)start to:(NSString *)end usingBlock:(void (^)(PKToken *token, BOOL *consume, BOOL *stop))block;
+- (void)consumeFrom:(NSString *)start to:(NSString *)end options:(GBTokenizerOptions)options usingBlock:(void (^)(PKToken *token, BOOL *consume, BOOL *stop))block;
 
 /** Specifies whether we're at EOF.
  

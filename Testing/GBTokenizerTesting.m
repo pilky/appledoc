@@ -76,6 +76,17 @@
 	assertThat([[tokenizer lookahead:2] stringValue], is(@"three"));
 }
 
+- (void)testLookahead_shouldReturnNextTokenWithWhiteSpace {
+	// setup
+	GBTokenizer *tokenizer = [GBTokenizer tokenizerWithSource:[self defaultTokenizer] filename:@"file"];
+	// execute & verify
+	assertThat([[tokenizer lookahead:0 options:GBTokenizerIncludeWhitespace] stringValue], is(@"one"));
+	assertThat([[tokenizer lookahead:1 options:GBTokenizerIncludeWhitespace] stringValue], is(@" "));
+	assertThat([[tokenizer lookahead:2 options:GBTokenizerIncludeWhitespace] stringValue], is(@"two"));
+	assertThat([[tokenizer lookahead:3 options:GBTokenizerIncludeWhitespace] stringValue], is(@" "));
+	assertThat([[tokenizer lookahead:4 options:GBTokenizerIncludeWhitespace] stringValue], is(@"three"));
+}
+
 - (void)testLookahead_shouldReturnEOFToken {
 	// setup
 	GBTokenizer *tokenizer = [GBTokenizer tokenizerWithSource:[self defaultTokenizer] filename:@"file"];
@@ -119,6 +130,20 @@
 	[tokenizer consume:1];
 	assertThat([tokenizer.currentToken stringValue], is(@"two"));
 	[tokenizer consume:1];
+	assertThat([tokenizer.currentToken stringValue], is(@"three"));
+}
+
+- (void)testConsume_shouldMoveToNextTokenWithWhitespace {
+	// setup
+	GBTokenizer *tokenizer = [GBTokenizer tokenizerWithSource:[self defaultTokenizer] filename:@"file"];
+	// execute & verify
+	[tokenizer consume:1 options:GBTokenizerIncludeWhitespace];
+	assertThat([tokenizer.currentToken stringValue], is(@" "));
+	[tokenizer consume:1 options:GBTokenizerIncludeWhitespace];
+	assertThat([tokenizer.currentToken stringValue], is(@"two"));
+	[tokenizer consume:1 options:GBTokenizerIncludeWhitespace];
+	assertThat([tokenizer.currentToken stringValue], is(@" "));
+	[tokenizer consume:1 options:GBTokenizerIncludeWhitespace];
 	assertThat([tokenizer.currentToken stringValue], is(@"three"));
 }
 
@@ -203,6 +228,26 @@
 	assertThat([tokens objectAtIndex:3], is(@"four"));
 }
 
+- (void)testConsumeFromToUsingBlock_shouldReportAllTokensWithWhitespace {
+	// setup
+	GBTokenizer *tokenizer = [GBTokenizer tokenizerWithSource:[self longTokenizer] filename:@"file"];
+	NSMutableArray *tokens = [NSMutableArray array];
+	// execute
+	[tokenizer consumeFrom:nil to:@"five" options:GBTokenizerIncludeWhitespace usingBlock:^(PKToken *token, BOOL *consume, BOOL *stop) {
+		[tokens addObject:[token stringValue]];
+	}];
+	// verify
+	assertThatInteger([tokens count], equalToInteger(8));
+	assertThat([tokens objectAtIndex:0], is(@"one"));
+	assertThat([tokens objectAtIndex:1], is(@" "));
+	assertThat([tokens objectAtIndex:2], is(@"two"));
+	assertThat([tokens objectAtIndex:3], is(@" "));
+	assertThat([tokens objectAtIndex:4], is(@"three"));
+	assertThat([tokens objectAtIndex:5], is(@" "));
+	assertThat([tokens objectAtIndex:6], is(@"four"));
+	assertThat([tokens objectAtIndex:7], is(@" "));
+}
+
 - (void)testConsumeFromToUsingBlock_shouldReportAllTokensFromTo {
 	// setup
 	GBTokenizer *tokenizer = [GBTokenizer tokenizerWithSource:[self longTokenizer] filename:@"file"];
@@ -216,6 +261,25 @@
 	assertThat([tokens objectAtIndex:0], is(@"two"));
 	assertThat([tokens objectAtIndex:1], is(@"three"));
 	assertThat([tokens objectAtIndex:2], is(@"four"));
+}
+
+- (void)testConsumeFromToUsingBlock_shouldReportAllTokensFromToWithWhitespace {
+	// setup
+	GBTokenizer *tokenizer = [GBTokenizer tokenizerWithSource:[self longTokenizer] filename:@"file"];
+	NSMutableArray *tokens = [NSMutableArray array];
+	// execute
+	[tokenizer consumeFrom:@"one" to:@"five" options:GBTokenizerIncludeWhitespace usingBlock:^(PKToken *token, BOOL *consume, BOOL *stop) {
+		[tokens addObject:[token stringValue]];
+	}];
+	// verify
+	assertThatInteger([tokens count], equalToInteger(7));
+	assertThat([tokens objectAtIndex:0], is(@" "));
+	assertThat([tokens objectAtIndex:1], is(@"two"));
+	assertThat([tokens objectAtIndex:2], is(@" "));
+	assertThat([tokens objectAtIndex:3], is(@"three"));
+	assertThat([tokens objectAtIndex:4], is(@" "));
+	assertThat([tokens objectAtIndex:5], is(@"four"));
+	assertThat([tokens objectAtIndex:6], is(@" "));
 }
 
 - (void)testConsumeFromToUsingBlock_shouldReturnIfStartTokenDoesntMatch {

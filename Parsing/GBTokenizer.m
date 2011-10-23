@@ -15,6 +15,7 @@
 
 @interface GBTokenizer ()
 
+- (void)consumeWhitespace;
 - (BOOL)consumeComments;
 - (NSString *)commentValueFromString:(NSString *)value;
 - (NSArray *)allTokensFromTokenizer:(PKTokenizer *)tokenizer;
@@ -61,9 +62,10 @@
 		self.tokenIndex = 0;
 		self.lastCommentBuilder = [NSMutableString string];
 		self.previousCommentBuilder = [NSMutableString string];
-		self.filename = filename;
+		self.filename = [filename lastPathComponent];
 		self.input = tokenizer.string;
 		self.tokens = [self allTokensFromTokenizer:tokenizer];
+		[self consumeWhitespace];
 		[self consumeComments];
 	}
 	return self;
@@ -72,12 +74,18 @@
 #pragma mark Tokenizing handling
 
 - (PKToken *)lookahead:(NSUInteger)offset {
+	return [self lookahead:offset options:0];
+}
+
+- (PKToken *)lookahead:(NSUInteger)offset options:(GBTokenizerOptions)options {
+	BOOL ignoreWhitespace = !(options & GBTokenizerIncludeWhitespace);
 	NSUInteger delta = 0;
 	NSUInteger counter = 0;
 	while (counter <= offset) {
 		NSUInteger index = self.tokenIndex + delta;
 		if (index >= [self.tokens count]) return [PKToken EOFToken];
-		if ([[self.tokens objectAtIndex:index] isComment]) {
+		PKToken *token = [self.tokens objectAtIndex:index];
+		if ([token isComment] || ([token isWhitespace] && ignoreWhitespace)) {
 			delta++;
 			continue;
 		}
@@ -88,11 +96,16 @@
 }
 
 - (void)lookaheadTo:(NSString *)end usingBlock:(void (^)(PKToken *token, BOOL *stop))block {
+	[self lookaheadTo:end options:0 usingBlock:block];
+}
+
+- (void)lookaheadTo:(NSString *)end options:(GBTokenizerOptions)options usingBlock:(void (^)(PKToken *token, BOOL *stop))block {
+	BOOL ignoreWhitespace = !(options & GBTokenizerIncludeWhitespace);
     NSUInteger tokenCount = [self.tokens count];
 	BOOL quit = NO;
     for (NSUInteger index = self.tokenIndex; index < tokenCount; ++index) {
         PKToken *token = [self.tokens objectAtIndex:index];
-		if ([token isComment]) {
+		if ([token isComment] || ([token isWhitespace] && ignoreWhitespace)) {
 			index++;
 			continue;
 		}
@@ -110,23 +123,43 @@
 }
 
 - (void)consume:(NSUInteger)count {
+	[self consume:count options:0];
+}
+
+- (void)consume:(NSUInteger)count options:(GBTokenizerOptions)options {
+	BOOL ignoreWhitespace = !(options & GBTokenizerIncludeWhitespace);
 	if (count == 0) return;
 	while (count > 0 && ![self eof]) {
 		self.tokenIndex++;
+		if (ignoreWhitespace) {
+			[self consumeWhitespace];
+		}
 		[self consumeComments];
+		if (ignoreWhitespace) {
+			[self consumeWhitespace];
+		}
 		count--;
 	}
 }
 
 - (void)consumeTo:(NSString *)end usingBlock:(void (^)(PKToken *token, BOOL *consume, BOOL *stop))block {
-	[self consumeFrom:nil to:end usingBlock:block];
+	[self consumeFrom:nil to:end options:0 usingBlock:block];
+}
+
+- (void)consumeTo:(NSString *)end options:(GBTokenizerOptions)options usingBlock:(void (^)(PKToken *token, BOOL *consume, BOOL *stop))block {
+	[self consumeFrom:nil to:end options:options usingBlock:block];
 }
 
 - (void)consumeFrom:(NSString *)start to:(NSString *)end usingBlock:(void (^)(PKToken *token, BOOL *consume, BOOL *stop))block {	
+	[self consumeFrom:start to:end options:0 usingBlock:block];
+}
+
+- (void)consumeFrom:(NSString *)start to:(NSString *)end options:(GBTokenizerOptions)options usingBlock:(void (^)(PKToken *token, BOOL *consume, BOOL *stop))block {
+	//BOOL ignoreWhitespace = !(options & GBTokenizerIncludeWhitespace);
 	// Skip starting token.
 	if (start) {
 		if (![[self currentToken] matches:start]) return;
-		[self consume:1];
+		[self consume:1 options:options];
 	}
 	
 	// Report all tokens until EOF or ending token is found.
@@ -143,12 +176,12 @@
 		// Report the token.
 		BOOL consume = YES;
 		block([self currentToken], &consume, &quit);
-		if (consume) [self consume:1];
+		if (consume) [self consume:1 options:options];
 		if (quit) break;
 	}
 	
 	// Skip ending token if found.
-	if ([[self currentToken] matches:end]) [self consume:1];
+	if ([[self currentToken] matches:end]) [self consume:1 options:options];
 }
 
 - (BOOL)eof {
@@ -167,6 +200,14 @@
 	return [GBSourceInfo infoWithFilename:self.filename lineNumber:lines];
 }
 
+#pragma mark Whitespace handling
+
+- (void)consumeWhitespace {
+	while (![self eof] && [[self currentToken] isWhitespace]) {
+		self.tokenIndex++;
+	}
+}
+
 #pragma mark Comments handling
 
 - (BOOL)consumeComments {
@@ -179,7 +220,7 @@
 	PKToken *startingPreviousToken = nil;
 	PKToken *startingLastToken = nil;
 	NSUInteger previousSingleLineEndOffset = 0;
-	while (![self eof] && [[self currentToken] isComment]) {
+	while (![self eof] && ([[self currentToken] isComment])) {
 		PKToken *token = [self currentToken];
 		NSString *value = nil;
 		
@@ -214,6 +255,7 @@
         if (value)
             [self.lastCommentBuilder appendString:value];
 		self.tokenIndex++;
+		[self consumeWhitespace];
 	}
 	
 	// If last comment contains @name, we should assign it to previous one and reset current! This should ideally be handled by higher level component, but it's simplest to do it here. Note that we don't deal with source info here, we'll do immediately after this as long as we properly setup tokens.
@@ -309,6 +351,7 @@
 	// Return all appledoc comments too, but ignore ordinary C comments!
 	BOOL reportsComments = tokenizer.commentState.reportsCommentTokens;
 	tokenizer.commentState.reportsCommentTokens = YES;
+	tokenizer.whitespaceState.reportsWhitespaceTokens = YES;
 	NSMutableArray *result = [NSMutableArray array];
 	PKToken *token;
 	while ((token = [tokenizer nextToken]) != [PKToken EOFToken]) {

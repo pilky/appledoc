@@ -131,7 +131,6 @@
 	PKTokenizer *result = [PKTokenizer tokenizerWithString:input];
 	[result setTokenizerState:result.wordState from:'_' to:'_'];	// Allow words to start with _
 	[result.symbolState add:@"..."];	// Allow ... as single token
-	[[result whitespaceState] setReportsWhitespaceTokens:YES];
 	return result;
 }
 
