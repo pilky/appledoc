@@ -50,11 +50,23 @@
 
 @end
 
+@interface GBObjectiveCParser (AdditionalInfoParsing) 
+
+- (void)matchExtern;
+- (void)matchDefine;
+- (void)matchEnum;
+- (void)matchStruct;
+- (void)matchTypeDef;
+
+@end
+
+
 @interface GBObjectiveCParser (CommonParsing)
 
 - (BOOL)matchNextObject;
 - (BOOL)matchObjectDefinition;
 - (BOOL)matchObjectDeclaration;
+- (BOOL)matchAdditionalInfo;
 - (BOOL)matchMethodDataForProvider:(GBMethodsProvider *)provider from:(NSString *)start to:(NSString *)end required:(BOOL)required;
 - (void)registerComment:(GBComment *)comment toObject:(GBModelBase *)object;
 - (void)registerLastCommentToObject:(GBModelBase *)object;
@@ -119,6 +131,7 @@
 	PKTokenizer *result = [PKTokenizer tokenizerWithString:input];
 	[result setTokenizerState:result.wordState from:'_' to:'_'];	// Allow words to start with _
 	[result.symbolState add:@"..."];	// Allow ... as single token
+	[[result whitespaceState] setReportsWhitespaceTokens:YES];
 	return result;
 }
 
@@ -368,11 +381,42 @@
 
 #pragma mark -
 
+@implementation GBObjectiveCParser (AdditionalInfoParsing) 
+
+- (void)matchExtern {
+	//NSMutableArray *tokens = [NSMutableArray array];
+	NSLog(@"%@", [self.tokenizer input]);
+	[self.tokenizer consumeTo:@";" usingBlock:^(PKToken *token, BOOL *consume, BOOL *stop) {
+		NSLog(@"%@", token);
+	}];
+}
+
+- (void)matchDefine {
+	
+}
+
+- (void)matchEnum {
+	
+}
+
+- (void)matchStruct {
+	
+}
+
+- (void)matchTypeDef {
+	
+}
+
+@end
+
+#pragma mark -
+
 @implementation GBObjectiveCParser (CommonParsing)
 
 - (BOOL)matchNextObject {
 	if ([self matchObjectDefinition]) return YES;
 	if ([self matchObjectDeclaration]) return YES;
+	if ([self matchAdditionalInfo]) return YES;
 	return NO;
 }
 
@@ -430,6 +474,14 @@
 		return YES;
 	}
 	
+	return NO;
+}
+
+- (BOOL)matchAdditionalInfo {
+	if ([[self.tokenizer currentToken] matches:@"extern"]) {
+		[self matchExtern];
+		return YES;
+	}
 	return NO;
 }
 
