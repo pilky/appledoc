@@ -135,6 +135,10 @@
 			[self.tokenizer consume:1];
 		}
 	}
+	
+	for (id additionalObject in self.additionalInfoObjects) {
+		[additionalObject setOwner:self.primaryFileObject];
+	}
 }
 
 - (PKTokenizer *)tokenizerWithInputString:(NSString *)input {
@@ -420,8 +424,8 @@
 	}
 	GBConstantData *constant = [GBConstantData constantDataWithName:[nameToken stringValue]];
 	[constant setCode:[[tokens componentsJoinedByString:@""] stringByAppendingString:@";"]];
-	[self registerComment:self.tokenizer.lastComment toObject:constant];
 	[[self constantGroup] addConstant:constant];
+	[self registerLastCommentToObject:constant];
 }
 
 - (void)matchDefine {
@@ -442,12 +446,13 @@
 
 - (GBConstantGroupData *)constantGroup {
 	GBConstantGroupData *group = self.currentConstantGroup;
-	//if constant group comment != previousComment then create
-	if (!group || (group.comment && ![group.comment isEqual:self.tokenizer.previousComment])) {
+	//if we have a previous comment it means we have a new group
+	if (!group || self.tokenizer.previousComment) {
 		group = [GBConstantGroupData constantGroupWithName:[self constantGroupNameFromComment:self.tokenizer.previousComment]];
 		[self registerComment:self.tokenizer.previousComment toObject:group];
 		self.currentConstantGroup = group;
 		[self.store registerConstantGroup:group];
+		[self.additionalInfoObjects addObject:group];
 	}
 	return group;
 }

@@ -105,8 +105,8 @@
 	[result setObject:self.settings.projectCompany forKey:@"projectCompany"];
 	[result setObject:self.settings.projectName forKey:@"projectName"];
 	[result setObject:self.settings.stringTemplates forKey:@"strings"];
-	[result setObject:[self.store constants] forKey:@"constants"];
-	if ([[self.store constants] count]) {
+	[result setObject:[self.store constantsForOwner:object] forKey:@"constants"];
+	if ([[self.store constantsForOwner:object] count]) {
 		[result setObject:[GRYes yes] forKey:@"hasConstants"];
 	}
 	return result;

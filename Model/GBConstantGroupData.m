@@ -10,7 +10,7 @@
 
 @implementation GBConstantGroupData
 
-@synthesize owners;
+@synthesize owner;
 @synthesize name;
 
 + (id)constantGroupWithName:(NSString *)name {
