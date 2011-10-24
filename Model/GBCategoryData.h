@@ -20,6 +20,7 @@
 	NSString *_className;
 	GBAdoptedProtocolsProvider *_adoptedProtocols;
 	GBMethodsProvider *_methods;
+	GBAdditionalInfoProvider *_additionalInfo;
 }
 
 ///---------------------------------------------------------------------------------------
@@ -67,5 +68,8 @@
 
 /** Categories methods, available via `GBMethodsProvider`. */
 @property (readonly) GBMethodsProvider *methods;
+
+/** Class's additional info, available via `GBAdditionalInfoProvider` */
+@property (readonly) GBAdditionalInfoProvider *additionalInfo;
 
 @end

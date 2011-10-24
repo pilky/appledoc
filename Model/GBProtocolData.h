@@ -18,6 +18,7 @@
 	NSString *_protocolName;
 	GBAdoptedProtocolsProvider *_adoptedProtocols;
 	GBMethodsProvider *_methods;
+	GBAdditionalInfoProvider *_additionalInfo;
 }
 
 ///---------------------------------------------------------------------------------------
@@ -54,5 +55,8 @@
 
 /** Protocol's methods, available via `GBMethodsProvider`. */
 @property (readonly) GBMethodsProvider *methods;
+
+/** Class's additional info, available via `GBAdditionalInfoProvider` */
+@property (readonly) GBAdditionalInfoProvider *additionalInfo;
 
 @end

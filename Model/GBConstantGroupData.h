@@ -19,7 +19,7 @@
 
 @property (readonly) NSString *name;
 @property (readonly) NSArray *constants;
-@property (copy) GBModelBase *owner;
+@property (retain) GBModelBase *owner;
 
 - (void)addConstant:(GBConstantData *)aConstant;
 

@@ -38,6 +38,7 @@
 		self.comment.sourceInfo = info;
 		_adoptedProtocols = [[GBAdoptedProtocolsProvider alloc] initWithParentObject:self];
 		_methods = [[GBMethodsProvider alloc] initWithParentObject:self];
+		_additionalInfo = [[GBAdditionalInfoProvider alloc] init];
 	}
 	return self;
 }
@@ -70,5 +71,6 @@
 @synthesize basePathOfDocument;
 @synthesize adoptedProtocols = _adoptedProtocols;
 @synthesize methods = _methods;
+@synthesize additionalInfo = _additionalInfo;
 
 @end

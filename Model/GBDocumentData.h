@@ -18,6 +18,7 @@
 	@private
 	GBAdoptedProtocolsProvider *_adoptedProtocols;
 	GBMethodsProvider *_methods;
+	GBAdditionalInfoProvider *_additionalInfo;
 }
 
 ///---------------------------------------------------------------------------------------

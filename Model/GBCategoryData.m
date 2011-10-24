@@ -26,6 +26,7 @@
 		_className = [className copy];
 		_adoptedProtocols = [[GBAdoptedProtocolsProvider alloc] initWithParentObject:self];
 		_methods = [[GBMethodsProvider alloc] initWithParentObject:self];
+		_additionalInfo = [[GBAdditionalInfoProvider alloc] init];
 	}
 	return self;
 }
@@ -43,6 +44,7 @@
 	GBCategoryData *sourceCategory = (GBCategoryData *)source;	
 	[self.adoptedProtocols mergeDataFromProtocolsProvider:sourceCategory.adoptedProtocols];
 	[self.methods mergeDataFromMethodsProvider:sourceCategory.methods];
+	[self.additionalInfo mergeDataFromAdditionalInfoProvider:sourceCategory.additionalInfo];
 }
 
 - (NSString *)description {
@@ -72,5 +74,6 @@
 @synthesize nameOfClass = _className;
 @synthesize adoptedProtocols = _adoptedProtocols;
 @synthesize methods = _methods;
+@synthesize additionalInfo = _additionalInfo;
 
 @end

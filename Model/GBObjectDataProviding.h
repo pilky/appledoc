@@ -11,6 +11,7 @@
 @class GBAdoptedProtocolsProvider;
 @class GBMethodsProvider;
 @class GBComment;
+@class GBAdditionalInfoProvider;
 
 /** Defines the requirements for object data providers.
  
@@ -23,5 +24,8 @@
 
 /** Object's methods, available via `GBMethodsProvider`. */
 @property (readonly) GBMethodsProvider *methods;
+
+/** */
+@property (readonly) GBAdditionalInfoProvider *additionalInfo;
 
 @end

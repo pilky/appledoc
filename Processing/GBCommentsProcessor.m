@@ -70,6 +70,7 @@ typedef NSUInteger GBProcessingFlag;
 - (BOOL)processReturnBlockInString:(NSString *)string lines:(NSArray *)lines blockRange:(NSRange)blockRange shortRange:(NSRange)shortRange;
 - (BOOL)processRelatedBlockInString:(NSString *)string lines:(NSArray *)lines blockRange:(NSRange)blockRange shortRange:(NSRange)shortRange;
 - (BOOL)processAvailabilityBlockInString:(NSString *)string lines:(NSArray *)lines blockRange:(NSRange)blockRange shortRange:(NSRange)shortRange;
+- (BOOL)processConstantGroupBlockInString:(NSString *)string lines:(NSArray *)lines blockRange:(NSRange)blockRange shortRange:(NSRange)shortRange;
 - (BOOL)isLineMatchingDirectiveStatement:(NSString *)string;
 
 - (GBCommentComponent *)commentComponentByPreprocessingString:(NSString *)string withFlags:(GBProcessingFlag)flags;
@@ -126,6 +127,7 @@ typedef NSUInteger GBProcessingFlag;
 #pragma mark Processing handling
 
 - (void)processComment:(GBComment *)comment withContext:(id)context store:(id)store {
+	GBLogInfo(@"comment:%@", [comment stringValue]);
 	NSParameterAssert(comment != nil);
 	NSParameterAssert(store != nil);
 	if (comment.originalContext != nil && comment.originalContext != context) return;
@@ -191,6 +193,7 @@ typedef NSUInteger GBProcessingFlag;
 	NSArray *block = [lines subarrayWithRange:blockRange];
 	if ([self isLineMatchingDirectiveStatement:[block firstObject]]) {
 		NSString *string = [self stringByCombiningTrimmedLines:block];
+		//GBLogInfo(@"line: %@", lines);
 		if ([self processWarningBlockInString:string lines:lines blockRange:blockRange shortRange:shortRange]) return;
 		if ([self processBugBlockInString:string lines:lines blockRange:blockRange shortRange:shortRange]) return;
 		if ([self processParamBlockInString:string lines:lines blockRange:blockRange shortRange:shortRange]) return;
@@ -198,7 +201,6 @@ typedef NSUInteger GBProcessingFlag;
 		if ([self processReturnBlockInString:string lines:lines blockRange:blockRange shortRange:shortRange]) return;
 		if ([self processAvailabilityBlockInString:string lines:lines blockRange:blockRange shortRange:shortRange]) return;
 		if ([self processRelatedBlockInString:string lines:lines blockRange:blockRange shortRange:shortRange]) return;
-		
 		
 		GBLogXWarn(self.currentSourceInfo, @"Unknown directive block %@ encountered at %@, processing as standard text!", [[lines firstObject] normalizedDescription], self.currentSourceInfo);
 	}
@@ -401,6 +403,8 @@ typedef NSUInteger GBProcessingFlag;
 	if ([string isMatchedByRegex:self.components.returnDescriptionRegex]) return YES;
 	if ([string isMatchedByRegex:self.components.availabilityRegex]) return YES;
 	if ([string isMatchedByRegex:self.components.relatedSymbolRegex]) return YES;
+	GBLogInfo(@"matches constant:%@ %d", string, [string isMatchedByRegex:self.components.constantGroupRegex]);
+	if ([string isMatchedByRegex:self.components.constantGroupRegex]) return YES;
 	return NO;
 }
 

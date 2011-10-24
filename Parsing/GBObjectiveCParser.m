@@ -451,7 +451,7 @@
 		group = [GBConstantGroupData constantGroupWithName:[self constantGroupNameFromComment:self.tokenizer.previousComment]];
 		[self registerComment:self.tokenizer.previousComment toObject:group];
 		self.currentConstantGroup = group;
-		[self.store registerConstantGroup:group];
+		[self.store.additionalInfoProvider registerAdditionalInfo:group];
 		[self.additionalInfoObjects addObject:group];
 	}
 	return group;

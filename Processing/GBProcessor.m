@@ -14,12 +14,15 @@
 
 @interface GBProcessor ()
 
+- (void)preprocessAdditionalInfo;
 - (void)processClasses;
 - (void)processCategories;
 - (void)processProtocols;
 - (void)processDocuments;
+- (void)processUnownedAdditionalInfo;
 
 - (void)processMethodsFromProvider:(GBMethodsProvider *)provider;
+- (void)processConstantsFromObject:(GBModelBase *)object;
 - (void)processCommentForObject:(GBModelBase *)object;
 - (void)processParametersFromComment:(GBComment *)comment matchingMethod:(GBMethodData *)method;
 - (void)processHtmlReferencesForObject:(GBModelBase *)object;
@@ -73,10 +76,13 @@
 	self.store = store;
 	[self setupKnownObjectsFromStore];
 	[self mergeKnownCategoriesFromStore];
+	//process additional info
+		//add them to owners
 	[self processClasses];
 	[self processCategories];
 	[self processProtocols];
 	[self processDocuments];
+	//process unowned additional info
 }
 
 - (void)processClasses {
@@ -86,6 +92,7 @@
 		GBLogInfo(@"Processing class %@...", class);
 		self.currentContext = class;
 		[self processMethodsFromProvider:class.methods];
+		//process additional info from owner
 		if (![self removeUndocumentedObject:class]) {
 			[self processCommentForObject:class];
 			[self validateCommentsForObjectAndMembers:class];

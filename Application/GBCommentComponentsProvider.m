@@ -81,7 +81,7 @@
 #pragma mark Constant speficit detection
 
 - (NSString *)constantGroupRegex {
-	GBRETURN_ON_DEMAND(@"(?m:^\\s*\\Sconstantgroup\\s+(.*))");
+	GBRETURN_ON_DEMAND(@"(?m:^\\s*\\Sconstantgroup\\s+(.*?)[\\r\\n](.*))");
 }
 
 #pragma mark Markdown detection

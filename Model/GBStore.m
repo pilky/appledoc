@@ -11,6 +11,8 @@
 
 @implementation GBStore
 
+@synthesize additionalInfoProvider;
+
 #pragma mark Initialization & disposal
 
 - (id)init {
@@ -26,8 +28,6 @@
 		_documentsByName = [[NSMutableDictionary alloc] init];
 		_customDocuments = [[NSMutableSet alloc] init];
 		_customDocumentsByKey = [[NSMutableDictionary alloc] init];
-		_constants = [[NSMutableSet alloc] init];
-		_dataTypes = [[NSMutableSet alloc] init];
 	}
 	return self;
 }
@@ -121,18 +121,6 @@
 	[_customDocumentsByKey setObject:document forKey:key];
 }
 
-- (void)registerConstantGroup:(GBConstantGroupData *)constant {
-	NSParameterAssert(constant != nil);
-	GBLogDebug(@"Registering constant %@", constant);
-	[_constants addObject:constant];
-}
-
-- (void)registerDataType:(id)dataType {
-	NSParameterAssert(dataType != nil);
-	GBLogDebug(@"Registering data type %@", dataType);
-	[_dataTypes addObject:dataType];
-}
-
 - (void)unregisterTopLevelObject:(id)object {
 	if ([_classes containsObject:object]) {
 		[_classes removeObject:object];
@@ -173,12 +161,11 @@
 	return [_customDocumentsByKey objectForKey:key];
 }
 
-- (NSSet *)constantsForOwner:(id)owner {
-	return [[self constants] filteredSetUsingPredicate:[NSPredicate predicateWithFormat:@"owners contains %@", owner]];
-}
-
-- (NSSet *)dataTypesForOwner:(id)owner {
-	return [[self dataTypes] filteredSetUsingPredicate:[NSPredicate predicateWithFormat:@"owners contains %@", owner]];
+- (GBAdditionalInfoProvider *)additionalInfoProvider {
+	if (!additionalInfoProvider) {
+		additionalInfoProvider = [[GBAdditionalInfoProvider alloc] init];
+	}
+	return additionalInfoProvider;
 }
 
 @synthesize classes = _classes;
@@ -186,7 +173,6 @@
 @synthesize protocols = _protocols;
 @synthesize documents = _documents;
 @synthesize customDocuments = _customDocuments;
-@synthesize constants = _constants;
-@synthesize dataTypes = _dataTypes;
+
 
 @end

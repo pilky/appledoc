@@ -26,6 +26,7 @@
 		_adoptedProtocols = [[GBAdoptedProtocolsProvider alloc] initWithParentObject:self];
 		_ivars = [[GBIvarsProvider alloc] initWithParentObject:self];
 		_methods = [[GBMethodsProvider alloc] initWithParentObject:self];
+		_additionalInfo = [[GBAdditionalInfoProvider alloc] init];
 	}
 	return self;
 }
@@ -51,6 +52,7 @@
 	[self.adoptedProtocols mergeDataFromProtocolsProvider:sourceClass.adoptedProtocols];
 	[self.ivars mergeDataFromIvarsProvider:sourceClass.ivars];
 	[self.methods mergeDataFromMethodsProvider:sourceClass.methods];
+	[self.additionalInfo mergeDataFromAdditionalInfoProvider:sourceClass.additionalInfo];
 }
 
 - (NSString *)description {
@@ -73,5 +75,6 @@
 @synthesize adoptedProtocols = _adoptedProtocols;
 @synthesize ivars = _ivars;
 @synthesize methods = _methods;
+@synthesize additionalInfo = _additionalInfo;
 
 @end

@@ -12,7 +12,7 @@
 @class GBCategoryData;
 @class GBProtocolData;
 @class GBDocumentData;
-@class GBConstantGroupData;
+@class GBAdditionalInfoProvider;
 
 /** Implements the application's in-memory objects data store.
  
@@ -30,8 +30,6 @@
 	NSMutableDictionary *_documentsByName;
 	NSMutableSet *_customDocuments;
 	NSMutableDictionary *_customDocumentsByKey;
-	NSMutableSet *_constants;
-	NSMutableSet *_dataTypes;
 }
 
 ///---------------------------------------------------------------------------------------
@@ -110,14 +108,6 @@
  */
 - (void)registerCustomDocument:(GBDocumentData *)document withKey:(id)key;
 
-
-
-#warning Needs documenting
-
-- (void)registerConstantGroup:(GBConstantGroupData *)constant;
-- (void)registerDataType:(id)dataType;
-
-
 /** Unregisters the given class, category or protocol.
  
  If the object is not part of the store, nothing happens.
@@ -189,12 +179,6 @@
  */
 - (GBDocumentData *)customDocumentWithKey:(id)key;
 
-
-#warning Needs Documenting
-
-- (NSSet *)constantsForOwner:(id)owner;
-- (NSSet *)dataTypesForOwner:(id)owner;
-
 /** The list of all registered classes as instances of `GBClassData`.
  
  @see classWithName:
@@ -230,11 +214,8 @@
  */
 @property (readonly) NSSet *customDocuments;
 
-
 #warning Needs Documenting
-
-@property (readonly) NSSet *constants;
-@property (readonly) NSSet *dataTypes;
+@property (readonly) GBAdditionalInfoProvider *additionalInfoProvider;
 
 ///---------------------------------------------------------------------------------------
 /// @name Helper methods

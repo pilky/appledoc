@@ -12,6 +12,7 @@
 @class GBAdoptedProtocolsProvider;
 @class GBIvarsProvider;
 @class GBMethodsProvider;
+@class GBAdditionalInfoProvider;
 
 /** Describes a class.
  */
@@ -21,6 +22,7 @@
 	GBAdoptedProtocolsProvider *_adoptedProtocols;
 	GBIvarsProvider *_ivars;
 	GBMethodsProvider *_methods;
+	GBAdditionalInfoProvider *_additionalInfo;
 }
 
 ///---------------------------------------------------------------------------------------
@@ -66,5 +68,8 @@
 
 /** Class's methods, available via `GBMethodsProvider`. */
 @property (readonly) GBMethodsProvider *methods;
+
+/** Class's additional info, available via `GBAdditionalInfoProvider` */
+@property (readonly) GBAdditionalInfoProvider *additionalInfo;
 
 @end

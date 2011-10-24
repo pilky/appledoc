@@ -28,3 +28,4 @@
 #import "GBAdoptedProtocolsProvider.h"
 #import "GBIvarsProvider.h"
 #import "GBMethodsProvider.h"
+#import "GBAdditionalInfoProvider.h"
