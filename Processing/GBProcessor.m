@@ -14,12 +14,11 @@
 
 @interface GBProcessor ()
 
-- (void)preprocessAdditionalInfo;
+- (void)processAdditionalInfo;
 - (void)processClasses;
 - (void)processCategories;
 - (void)processProtocols;
 - (void)processDocuments;
-- (void)processUnownedAdditionalInfo;
 
 - (void)processMethodsFromProvider:(GBMethodsProvider *)provider;
 - (void)processConstantsFromObject:(GBModelBase *)object;
@@ -36,6 +35,7 @@
 - (void)setupSuperclassForClass:(GBClassData *)class;
 - (void)setupAdoptedProtocolsFromProvider:(GBAdoptedProtocolsProvider *)provider;
 
+- (void)validateCommentsForObject:(GBModelBase *)object;
 - (void)validateCommentsForObjectAndMembers:(GBModelBase *)object;
 - (BOOL)isCommentValid:(GBComment *)comment;
 
@@ -76,13 +76,19 @@
 	self.store = store;
 	[self setupKnownObjectsFromStore];
 	[self mergeKnownCategoriesFromStore];
-	//process additional info
-		//add them to owners
+	[self processAdditionalInfo];
 	[self processClasses];
 	[self processCategories];
 	[self processProtocols];
 	[self processDocuments];
-	//process unowned additional info
+}
+
+- (void)processAdditionalInfo {
+	for (GBConstantGroupData *constant in [self.store.additionalInfoProvider additionaInfoOfTypes:GBAdditionalInfoTypeConstant]) {
+		[self processCommentForObject:constant];
+		[self validateCommentsForObject:constant];
+		[self processHtmlReferencesForObject:constant];
+	}
 }
 
 - (void)processClasses {
@@ -146,6 +152,7 @@
 		GBLogDebug(@"Finished processing custom document %@.", document);
 	}
 }
+
 
 #pragma mark Common data processing
 
@@ -390,11 +397,15 @@
 													
 #pragma mark Helper methods
 
-- (void)validateCommentsForObjectAndMembers:(GBModelBase *)object {
-    if (!object.includeInOutput) return;
+- (void)validateCommentsForObject:(GBModelBase *)object {
+	if (!object.includeInOutput) return;
     
 	// Checks if the object is commented and warns if not. This validates given object and all it's members comments! The reason for doing it together is due to the fact that we first process all members and then handle the object. At that point we can even remove the object if not documented. So we can't validate members before as we don't know whether they will be deleted together with their parent object too...
 	if (![self isCommentValid:object.comment] && self.settings.warnOnUndocumentedObject) GBLogXWarn(object.prefferedSourceInfo, @"%@ is not documented!", object);
+}
+
+- (void)validateCommentsForObjectAndMembers:(GBModelBase *)object {
+   	[self validateCommentsForObject:object];
 	
 	// Handle methods.
 	for (GBMethodData *method in [[(id<GBObjectDataProviding>)object methods] methods]) {
