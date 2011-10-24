@@ -11,6 +11,22 @@
 @implementation GBConstantGroupData
 
 @synthesize owners;
+@synthesize name;
+
++ (id)constantGroupWithName:(NSString *)name {
+	return [[self alloc] initWithName:name];
+}
+
+- (id)initWithName:(NSString *)aName {
+	if ((self = [super init])) {
+		name = [aName copy];
+		if (!name) {
+			name = @"Untitled Constant Group";
+		}
+		_constants = [NSMutableArray array];
+	}
+	return self;
+}
 
 - (NSArray *)constants {
 	return [_constants copy];

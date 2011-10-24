@@ -74,6 +74,13 @@
 @property (readonly) NSString *availabilityRegex;
 
 ///---------------------------------------------------------------------------------------
+/// @name Constant specific definitions
+///---------------------------------------------------------------------------------------
+
+/** Returns the regex used for matching method groups with capture 1 containing directive and capture 2 group name */
+@property (readonly) NSString *constantGroupRegex;
+
+///---------------------------------------------------------------------------------------
 /// @name Markdown specific definitions
 ///---------------------------------------------------------------------------------------
 

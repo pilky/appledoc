@@ -14,6 +14,9 @@
 	NSMutableArray *_constants;
 }
 
++ (id)constantGroupWithName:(NSString *)name;
+- (id)initWithName:(NSString *)name;
+
 @property (readonly) NSString *name;
 @property (readonly) NSArray *constants;
 @property (copy) NSArray *owners;

@@ -76,6 +76,7 @@
 - (void)registerLastCommentToObject:(GBModelBase *)object;
 - (void)registerSourceInfoFromCurrentTokenToObject:(GBModelBase *)object;
 - (NSString *)sectionNameFromComment:(GBComment *)comment;
+- (NSString *)constantGroupNameFromComment:(GBComment *)comment;
 - (void)updatePrimaryFileObject:(id)object;
 
 @end
@@ -418,7 +419,8 @@
 		nameToken = [tokens lastObject];
 	}
 	GBConstantData *constant = [GBConstantData constantDataWithName:[nameToken stringValue]];
-	[self registerLastCommentToObject:constant];
+	[constant setCode:[[tokens componentsJoinedByString:@""] stringByAppendingString:@";"]];
+	[self registerComment:self.tokenizer.lastComment toObject:constant];
 	[[self constantGroup] addConstant:constant];
 }
 
@@ -442,7 +444,7 @@
 	GBConstantGroupData *group = self.currentConstantGroup;
 	//if constant group comment != previousComment then create
 	if (!group || (group.comment && ![group.comment isEqual:self.tokenizer.previousComment])) {
-		group = [[GBConstantGroupData alloc] init];
+		group = [GBConstantGroupData constantGroupWithName:[self constantGroupNameFromComment:self.tokenizer.previousComment]];
 		[self registerComment:self.tokenizer.previousComment toObject:group];
 		self.currentConstantGroup = group;
 		[self.store registerConstantGroup:group];
@@ -685,6 +687,17 @@
 	
 	// If comment doesn't contain section name, ignore it, otherwise return the name.
 	NSString *name = [comment.stringValue stringByMatching:self.settings.commentComponents.methodGroupRegex capture:1];
+	if ([[name stringByTrimmingCharactersInSet:trimSet] length] == 0) return nil;
+	return [name stringByWordifyingWithSpaces];
+}
+
+- (NSString *)constantGroupNameFromComment:(GBComment *)comment {
+	// If comment has nil or whitespace-only string value, ignore it.
+	NSCharacterSet* trimSet = [NSCharacterSet whitespaceAndNewlineCharacterSet];	
+	if ([[comment.stringValue stringByTrimmingCharactersInSet:trimSet] length] == 0) return nil;
+	
+	// If comment doesn't contain section name, ignore it, otherwise return the name.
+	NSString *name = [comment.stringValue stringByMatching:self.settings.commentComponents.constantGroupRegex capture:1];
 	if ([[name stringByTrimmingCharactersInSet:trimSet] length] == 0) return nil;
 	return [name stringByWordifyingWithSpaces];
 }

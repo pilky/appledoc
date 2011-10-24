@@ -418,4 +418,12 @@ Section TableOfContents
 </ul></li>
 {{/hasInstanceMethods}}
 {{/object/methods}}
+
+{{#hasConstants}}
+<li role="treeitem" class="children"><span class="disclosure"></span><span class="sectionName"><a href="#constants">{{strings/objectMethods/constantsTitle}}</a></span><ul>
+	{{#constants}}
+	<li><span class="nodisclosure"></span><span class="sectionName"><a href="#{{htmlReferenceName}}">{{name}}</a></span></li>
+	{{/constants}}
+</ul></li>
+{{/hasConstants}}
 EndSection

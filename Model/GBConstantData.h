@@ -15,6 +15,6 @@
 - (id)initWithName:(NSString *)aName;
 
 @property (readonly) NSString *name;
-@property (readonly) NSString *code;
+@property (copy) NSString *code;
 
 @end

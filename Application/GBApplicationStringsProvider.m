@@ -79,6 +79,7 @@
 		[result setObject:@"Exceptions" forKey:@"exceptionsTitle"];
 		[result setObject:@"See Also" forKey:@"seeAlsoTitle"];
 		[result setObject:@"Declared In" forKey:@"declaredInTitle"];
+		[result setObject:@"Constants" forKey:@"constantsTitle"];
 	}
 	return result;
 }

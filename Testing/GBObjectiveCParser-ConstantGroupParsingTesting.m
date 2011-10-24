@@ -26,7 +26,7 @@
 	NSLog(@"=======");
 	[parser parseObjectsFromString:@"extern NSString * foo; extern NSString * foo;" sourceFile:@"filename.h" toStore:store];
 	NSLog(@"=======");
-	[parser parseObjectsFromString:@"extern int foo;" sourceFile:@"filename.h" toStore:store];
+	[parser parseObjectsFromString:@"/** @constants My Constants */\n/** Foo does this */\nextern int foo;" sourceFile:@"filename.h" toStore:store];
 	NSLog(@"=======");
 	[parser parseObjectsFromString:@"extern BOOL (^foo)(id bar, id baz);" sourceFile:@"filename.h" toStore:store];
 	// verify
@@ -34,6 +34,7 @@
 //	assertThatInteger([protocols count], equalToInteger(1));
 //	assertThat([[protocols objectAtIndex:0] nameOfProtocol], is(@"MyProtocol"));
 	NSLog(@"%@", [store constants]);
+	NSLog(@"%@", [store valueForKeyPath:@"constants.constants.code"]);
 }
 
 @end

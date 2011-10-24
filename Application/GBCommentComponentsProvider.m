@@ -78,6 +78,12 @@
 	GBRETURN_ON_DEMAND([self descriptionCaptureRegexForKeyword:@"(?:available|since)"]);
 }
 
+#pragma mark Constant speficit detection
+
+- (NSString *)constantGroupRegex {
+	GBRETURN_ON_DEMAND(@"(?m:^\\s*\\Sconstantgroup\\s+(.*))");
+}
+
 #pragma mark Markdown detection
 
 - (NSString *)markdownInlineLinkRegex {
