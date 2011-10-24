@@ -14,6 +14,7 @@
 #import "GBApplicationSettingsProvider.h"
 #import "GBDataObjects.h"
 #import "GBObjectiveCParser.h"
+#import "GBConstantGroupData.h"
 
 @interface GBObjectiveCParser ()
 
@@ -22,6 +23,9 @@
 @property (retain) GBStore *store;
 @property (retain) GBApplicationSettingsProvider *settings;
 @property (assign) BOOL includeInOutput;
+@property (retain) id primaryFileObject;
+@property (retain) NSMutableArray *additionalInfoObjects;
+@property (retain) GBConstantGroupData *currentConstantGroup;
 
 @end
 
@@ -72,6 +76,7 @@
 - (void)registerLastCommentToObject:(GBModelBase *)object;
 - (void)registerSourceInfoFromCurrentTokenToObject:(GBModelBase *)object;
 - (NSString *)sectionNameFromComment:(GBComment *)comment;
+- (void)updatePrimaryFileObject:(id)object;
 
 @end
 
@@ -106,6 +111,9 @@
 	self.store = store;
 	self.tokenizer = [GBTokenizer tokenizerWithSource:[self tokenizerWithInputString:input] filename:filename settings:self.settings];
     self.includeInOutput = YES;
+	self.primaryFileObject = nil;
+	self.additionalInfoObjects = [NSMutableArray array];
+	
     for (NSString *excludeOutputPath in self.settings.excludeOutputPaths) {
         if ([filename isEqualToString:excludeOutputPath]) {
             self.includeInOutput = NO;
@@ -140,6 +148,9 @@
 @synthesize settings;
 @synthesize store;
 @synthesize includeInOutput;
+@synthesize primaryFileObject;
+@synthesize additionalInfoObjects;
+@synthesize currentConstantGroup;
 
 @end
 
@@ -161,6 +172,8 @@
 	[self matchIvarsForProvider:class.ivars];
 	[self matchMethodDefinitionsForProvider:class.methods defaultsRequired:NO];
 	[self.store registerClass:class];
+	[self updatePrimaryFileObject:class];
+	self.currentConstantGroup = nil;
 }
 
 - (void)matchCategoryDefinition {
@@ -176,6 +189,8 @@
 	[self matchAdoptedProtocolForProvider:category.adoptedProtocols];
 	[self matchMethodDefinitionsForProvider:category.methods defaultsRequired:NO];
 	[self.store registerCategory:category];
+	[self updatePrimaryFileObject:category];
+	self.currentConstantGroup = nil;
 }
 
 - (void)matchExtensionDefinition {
@@ -190,6 +205,7 @@
 	[self matchAdoptedProtocolForProvider:extension.adoptedProtocols];
 	[self matchMethodDefinitionsForProvider:extension.methods defaultsRequired:NO];
 	[self.store registerCategory:extension];
+	self.currentConstantGroup = nil;
 }
 
 - (void)matchProtocolDefinition {
@@ -204,6 +220,8 @@
 	[self matchAdoptedProtocolForProvider:protocol.adoptedProtocols];
 	[self matchMethodDefinitionsForProvider:protocol.methods defaultsRequired:YES];
 	[self.store registerProtocol:protocol];
+	[self updatePrimaryFileObject:protocol];
+	self.currentConstantGroup = nil;
 }
 
 - (void)matchSuperclassForClass:(GBClassData *)class {
@@ -321,6 +339,8 @@
 	[self.tokenizer consume:2];
 	[self matchMethodDeclarationsForProvider:class.methods defaultsRequired:NO];
 	[self.store registerClass:class];
+	[self updatePrimaryFileObject:class];
+	self.currentConstantGroup = nil;
 }
 
 - (void)matchCategoryDeclaration {
@@ -335,6 +355,8 @@
 	[self.tokenizer consume:5];
 	[self matchMethodDeclarationsForProvider:category.methods defaultsRequired:NO];
 	[self.store registerCategory:category];
+	[self updatePrimaryFileObject:category];
+	self.currentConstantGroup = nil;
 }
 
 - (void)matchMethodDeclarationsForProvider:(GBMethodsProvider *)provider defaultsRequired:(BOOL)required {
@@ -383,11 +405,18 @@
 @implementation GBObjectiveCParser (AdditionalInfoParsing) 
 
 - (void)matchExtern {
-	//NSMutableArray *tokens = [NSMutableArray array];
-	NSLog(@"%@", [self.tokenizer input]);
-	[self.tokenizer consumeTo:@";" usingBlock:^(PKToken *token, BOOL *consume, BOOL *stop) {
-		NSLog(@"%@", token);
+	NSMutableArray *tokens = [NSMutableArray array];
+	__block PKToken *nameToken = nil;
+	[self.tokenizer consumeTo:@";" options:GBTokenizerIncludeWhitespace usingBlock:^(PKToken *token, BOOL *consume, BOOL *stop) {
+		[tokens addObject:token];
+		if ([token matches:@"("] && !nameToken) {
+			nameToken = [self.tokenizer lookahead:2];
+		}
 	}];
+	if (!nameToken) {
+		nameToken = [tokens lastObject];
+	}
+	NSLog(@"%@", nameToken);
 }
 
 - (void)matchDefine {
@@ -395,15 +424,15 @@
 }
 
 - (void)matchEnum {
-	
+	self.currentConstantGroup = nil;
 }
 
 - (void)matchStruct {
-	
+	self.currentConstantGroup = nil;
 }
 
 - (void)matchTypeDef {
-	
+	self.currentConstantGroup = nil;
 }
 
 @end
@@ -643,6 +672,16 @@
 	NSString *name = [comment.stringValue stringByMatching:self.settings.commentComponents.methodGroupRegex capture:1];
 	if ([[name stringByTrimmingCharactersInSet:trimSet] length] == 0) return nil;
 	return [name stringByWordifyingWithSpaces];
+}
+
+- (void)updatePrimaryFileObject:(id)object {
+	//Register the first object for this file so we can assign all additional info to it (all additional info with owners are sorted in the processing stage)
+	if (!self.primaryFileObject) {
+		self.primaryFileObject = object;
+	//Classes take precedence over categories & protocols. The first class listed wins
+	} else if ([object isKindOfClass:[GBClassData class]] && ![self.primaryFileObject isKindOfClass:[GBClassData class]]) {
+		self.primaryFileObject = object;
+	}
 }
 
 @end

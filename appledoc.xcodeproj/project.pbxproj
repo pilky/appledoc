@@ -211,6 +211,7 @@
 		73FC741D11FE215E00AAD0B9 /* GBMethodData.m in Sources */ = {isa = PBXBuildFile; fileRef = 73FC741C11FE215E00AAD0B9 /* GBMethodData.m */; };
 		73FC742D11FE274300AAD0B9 /* GBMethodArgument.m in Sources */ = {isa = PBXBuildFile; fileRef = 73FC742C11FE274300AAD0B9 /* GBMethodArgument.m */; };
 		8DD76F9C0486AA7600D96B5E /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 08FB779EFE84155DC02AAC07 /* Foundation.framework */; };
+		999CAB40145580F100EB49FF /* GBConstantGroupData.m in Sources */ = {isa = PBXBuildFile; fileRef = 999CAB3F145580F100EB49FF /* GBConstantGroupData.m */; };
 		99EA07FD14546AE300A7CEE9 /* GBObjectiveCParser-ConstantGroupParsingTesting.m in Sources */ = {isa = PBXBuildFile; fileRef = 99EA07FC14546AE300A7CEE9 /* GBObjectiveCParser-ConstantGroupParsingTesting.m */; };
 /* End PBXBuildFile section */
 
@@ -491,6 +492,8 @@
 		73FC742C11FE274300AAD0B9 /* GBMethodArgument.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GBMethodArgument.m; sourceTree = "<group>"; };
 		73FC743511FE2CEB00AAD0B9 /* GBMethodDataTesting.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GBMethodDataTesting.m; sourceTree = "<group>"; };
 		8DD76FA10486AA7600D96B5E /* appledoc */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = appledoc; sourceTree = BUILT_PRODUCTS_DIR; };
+		999CAB3E145580F100EB49FF /* GBConstantGroupData.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GBConstantGroupData.h; sourceTree = "<group>"; };
+		999CAB3F145580F100EB49FF /* GBConstantGroupData.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GBConstantGroupData.m; sourceTree = "<group>"; };
 		99EA07FC14546AE300A7CEE9 /* GBObjectiveCParser-ConstantGroupParsingTesting.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "GBObjectiveCParser-ConstantGroupParsingTesting.m"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -853,6 +856,8 @@
 				73FC742C11FE274300AAD0B9 /* GBMethodArgument.m */,
 				735B237F1304024600704844 /* GBDocumentData.h */,
 				735B23801304024600704844 /* GBDocumentData.m */,
+				999CAB3E145580F100EB49FF /* GBConstantGroupData.h */,
+				999CAB3F145580F100EB49FF /* GBConstantGroupData.m */,
 			);
 			name = Store;
 			sourceTree = "<group>";
@@ -1338,6 +1343,7 @@
 				73AF4ECC130938F3001152DB /* GBCommentComponentsList.m in Sources */,
 				73FAC0F9130BCB6F00F22475 /* GBCommentArgument.m in Sources */,
 				73C4C8611377DFF70024FA77 /* GBExitCodes.m in Sources */,
+				999CAB40145580F100EB49FF /* GBConstantGroupData.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
