@@ -10,11 +10,15 @@
 
 @implementation GBConstantGroupData
 
-- (id)init {
-	if ((self = [super init])) {
-		// Initialization code here.
-	}
-	return self;
+@synthesize owners;
+
+- (NSArray *)constants {
+	return [_constants copy];
 }
+
+- (void)addConstant:(GBConstantData *)aConstant {
+	[_constants addObject:aConstant];
+}
+
 
 @end

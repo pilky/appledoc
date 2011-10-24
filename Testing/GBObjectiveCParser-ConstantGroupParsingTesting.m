@@ -24,7 +24,7 @@
 	// execute
 	[parser parseObjectsFromString:@"extern NSString *foo;" sourceFile:@"filename.h" toStore:store];
 	NSLog(@"=======");
-	[parser parseObjectsFromString:@"extern NSString * foo;" sourceFile:@"filename.h" toStore:store];
+	[parser parseObjectsFromString:@"extern NSString * foo; extern NSString * foo;" sourceFile:@"filename.h" toStore:store];
 	NSLog(@"=======");
 	[parser parseObjectsFromString:@"extern int foo;" sourceFile:@"filename.h" toStore:store];
 	NSLog(@"=======");
@@ -33,6 +33,7 @@
 //	NSArray *protocols = [[[[store classes] anyObject] adoptedProtocols] protocolsSortedByName];
 //	assertThatInteger([protocols count], equalToInteger(1));
 //	assertThat([[protocols objectAtIndex:0] nameOfProtocol], is(@"MyProtocol"));
+	NSLog(@"%@", [store constants]);
 }
 
 @end

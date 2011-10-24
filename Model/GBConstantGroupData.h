@@ -8,6 +8,16 @@
 
 #import "GBModelBase.h"
 
-@interface GBConstantGroupData : GBModelBase 
+@class GBConstantData;
+
+@interface GBConstantGroupData : GBModelBase {
+	NSMutableArray *_constants;
+}
+
+@property (readonly) NSString *name;
+@property (readonly) NSArray *constants;
+@property (copy) NSArray *owners;
+
+- (void)addConstant:(GBConstantData *)aConstant;
 
 @end

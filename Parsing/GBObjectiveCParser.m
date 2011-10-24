@@ -14,7 +14,6 @@
 #import "GBApplicationSettingsProvider.h"
 #import "GBDataObjects.h"
 #import "GBObjectiveCParser.h"
-#import "GBConstantGroupData.h"
 
 @interface GBObjectiveCParser ()
 
@@ -61,6 +60,7 @@
 - (void)matchEnum;
 - (void)matchStruct;
 - (void)matchTypeDef;
+- (GBConstantGroupData *)constantGroup;
 
 @end
 
@@ -113,6 +113,7 @@
     self.includeInOutput = YES;
 	self.primaryFileObject = nil;
 	self.additionalInfoObjects = [NSMutableArray array];
+	self.currentConstantGroup = nil;
 	
     for (NSString *excludeOutputPath in self.settings.excludeOutputPaths) {
         if ([filename isEqualToString:excludeOutputPath]) {
@@ -416,7 +417,9 @@
 	if (!nameToken) {
 		nameToken = [tokens lastObject];
 	}
-	NSLog(@"%@", nameToken);
+	GBConstantData *constant = [GBConstantData constantDataWithName:[nameToken stringValue]];
+	[self registerLastCommentToObject:constant];
+	[[self constantGroup] addConstant:constant];
 }
 
 - (void)matchDefine {
@@ -433,6 +436,18 @@
 
 - (void)matchTypeDef {
 	self.currentConstantGroup = nil;
+}
+
+- (GBConstantGroupData *)constantGroup {
+	GBConstantGroupData *group = self.currentConstantGroup;
+	//if constant group comment != previousComment then create
+	if (!group || (group.comment && ![group.comment isEqual:self.tokenizer.previousComment])) {
+		group = [[GBConstantGroupData alloc] init];
+		[self registerComment:self.tokenizer.previousComment toObject:group];
+		self.currentConstantGroup = group;
+		[self.store registerConstantGroup:group];
+	}
+	return group;
 }
 
 @end
