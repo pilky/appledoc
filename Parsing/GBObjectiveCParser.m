@@ -702,7 +702,7 @@
 	if ([[comment.stringValue stringByTrimmingCharactersInSet:trimSet] length] == 0) return nil;
 	
 	// If comment doesn't contain section name, ignore it, otherwise return the name.
-	NSString *name = [comment.stringValue stringByMatching:self.settings.commentComponents.constantGroupRegex capture:1];
+	NSString *name = [comment.stringValue stringByMatching:self.settings.commentComponents.constantGroupRegex capture:2];
 	if ([[name stringByTrimmingCharactersInSet:trimSet] length] == 0) return nil;
 	return [name stringByWordifyingWithSpaces];
 }

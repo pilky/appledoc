@@ -200,8 +200,7 @@ typedef NSUInteger GBProcessingFlag;
 		if ([self processReturnBlockInString:string lines:lines blockRange:blockRange shortRange:shortRange]) return;
 		if ([self processAvailabilityBlockInString:string lines:lines blockRange:blockRange shortRange:shortRange]) return;
 		if ([self processRelatedBlockInString:string lines:lines blockRange:blockRange shortRange:shortRange]) return;
-		
-		GBLogInfo(@"%@", string);
+		if ([self processConstantGroupBlockInString:string lines:lines blockRange:blockRange shortRange:shortRange]) return;
 		
 		GBLogXWarn(self.currentSourceInfo, @"Unknown directive block %@ encountered at %@, processing as standard text!", [[lines firstObject] normalizedDescription], self.currentSourceInfo);
 	}
@@ -393,6 +392,28 @@ typedef NSUInteger GBProcessingFlag;
 	component.markdownValue = markdown;
 	component.relatedItem = self.lastReferencedObject;
 	[self.currentComment.relatedItems registerComponent:component];
+	return YES;
+}
+
+- (BOOL)processConstantGroupBlockInString:(NSString *)string lines:(NSArray *)lines blockRange:(NSRange)blockRange shortRange:(NSRange)shortRange {
+	NSArray *components = [string captureComponentsMatchedByRegex:self.components.constantGroupRegex];
+	if ([components count] == 0) return NO;
+	
+	// Get data from captures. Index 1 is directive, index 2 name, index 3 description text.
+	NSString *name = [components objectAtIndex:2];
+	NSString *description = [components objectAtIndex:3];
+	
+	//If we have no description then we don't need to continue
+	if (![description length])
+		return YES;
+	
+	NSString *prefix = [string substringToIndex:[string rangeOfString:description].location];
+	GBLogDebug(@"- Registering parameter %@ description %@ at %@...", name, [description normalizedDescription], self.currentSourceInfo);
+	[self reserveShortDescriptionFromLines:lines range:shortRange removePrefix:prefix];
+	
+	// Prepare object representation from the description and register the result to the comment.
+	GBCommentComponent *component = [self commentComponentByPreprocessingString:description withFlags:0];
+	[self.currentComment.longDescription registerComponent:component];
 	return YES;
 }
 
