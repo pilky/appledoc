@@ -110,11 +110,12 @@
 					{{/hasInstanceMethods}}
 					{{/object/methods}}
 					
-					{{#hasConstants}}
+					{{#object/additionalInfo}}
+					{{#hasClassConstants}}
 					<div class="section section-constants">
 						<a title="{{strings/objectMethods/constantsTitle}}" name="constants"></a>
 						<h2 class="subtitle subtitle-methods">{{strings/objectMethods/constantsTitle}}</h2>
-						{{#constants}}
+						{{#classConstants}}
 						<a name="{{htmlReferenceName}}" title="{{name}}"></a>
 						<h3 class="subsubtitle method-title">{{name}}</h3>
 						{{#comment}}
@@ -153,9 +154,10 @@
 						</div>
 						{{/hasLongDescription}}
 						{{/comment}}
-						{{/constants}}
+						{{/classConstants}}
 					</div>
-					{{/hasConstants}}
+					{{/hasClassConstants}}
+					{{/object/additionalInfo}}
 				</div>
 				<div class="main-navigation navigation-bottom">
 					{{>Navigation}}
@@ -466,11 +468,13 @@ Section TableOfContents
 {{/hasInstanceMethods}}
 {{/object/methods}}
 
-{{#hasConstants}}
+{{#object/additionalInfo}}
+{{#hasClassConstants}}
 <li role="treeitem" class="children"><span class="disclosure"></span><span class="sectionName"><a href="#constants">{{strings/objectMethods/constantsTitle}}</a></span><ul>
-	{{#constants}}
+	{{#classConstants}}
 	<li><span class="nodisclosure"></span><span class="sectionName"><a href="#{{htmlReferenceName}}">{{name}}</a></span></li>
-	{{/constants}}
+	{{/classConstants}}
 </ul></li>
-{{/hasConstants}}
+{{/hasClassConstants}}
+{{/object/additionalInfo}}
 EndSection

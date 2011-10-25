@@ -9,6 +9,8 @@
 #import "GBAdditionalInfoProvider.h"
 #import "GBDataObjects.h"
 
+#warning Needs Documenting
+
 @implementation GBAdditionalInfoProvider 
 
 - (id)init {
@@ -16,6 +18,7 @@
 		_constants = [NSMutableArray array];
 		_dataTypes = [NSMutableArray array];
 		_functions = [NSMutableArray array];
+		_notifications = [NSMutableArray array];
 	}
 	return self;
 }
@@ -39,6 +42,22 @@
 
 - (void)mergeDataFromAdditionalInfoProvider:(GBAdditionalInfoProvider *)source {
 	
+}
+
+- (NSArray *)classConstants {
+	return [self additionaInfoOfTypes:GBAdditionalInfoTypeConstant|GBAdditionalInfoTypeDataType];
+}
+
+- (NSArray *)classNotifications {
+	return [self additionaInfoOfTypes:GBAdditionalInfoTypeNotification];
+}
+
+- (BOOL)hasClassConstants {
+	return ([_constants count] + [_dataTypes count]) > 0;
+}
+
+- (BOOL)hasClassNotification {
+	return [_notifications count] > 0;
 }
 
 @end

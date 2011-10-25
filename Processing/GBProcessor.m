@@ -91,8 +91,22 @@
 			[self processCommentForObject:constant];
 			[self validateCommentsForObject:constant];
 			[self processHtmlReferencesForObject:constant];
-			NSLog(@"%@", [constant name]);
-			NSLog(@"isprocessed:%@", constant.comment.shortDescription.stringValue);
+			
+		}
+		NSString *ownerName = [[constantGroup comment] ownerName];
+		if (ownerName || [constantGroup owner]) {
+			[self.store.additionalInfoProvider unregisterAdditionalInfo:constantGroup];
+			id newOwner = [constantGroup owner];
+			if (ownerName) {
+				newOwner = [self.store classWithName:ownerName];
+				if (!newOwner) {
+					newOwner = [self.store protocolWithName:ownerName];
+				}
+				if (!newOwner) {
+					newOwner = [self.store categoryWithName:ownerName];
+				}
+			}
+			[[newOwner additionalInfo] registerAdditionalInfo:constantGroup];
 		}
 	}
 }

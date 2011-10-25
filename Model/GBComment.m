@@ -94,5 +94,6 @@
 @synthesize methodExceptions;
 @synthesize methodResult;
 @synthesize availability;
+@synthesize ownerName;
 
 @end

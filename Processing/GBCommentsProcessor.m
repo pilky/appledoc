@@ -72,6 +72,7 @@ typedef NSUInteger GBProcessingFlag;
 - (BOOL)processRelatedBlockInString:(NSString *)string lines:(NSArray *)lines blockRange:(NSRange)blockRange shortRange:(NSRange)shortRange;
 - (BOOL)processAvailabilityBlockInString:(NSString *)string lines:(NSArray *)lines blockRange:(NSRange)blockRange shortRange:(NSRange)shortRange;
 - (BOOL)processConstantGroupBlockInString:(NSString *)string lines:(NSArray *)lines blockRange:(NSRange)blockRange shortRange:(NSRange)shortRange;
+- (BOOL)processOwnerBlockInString:(NSString *)string lines:(NSArray *)lines blockRange:(NSRange)blockRange shortRange:(NSRange)shortRange;
 - (BOOL)isLineMatchingDirectiveStatement:(NSString *)string;
 
 - (GBCommentComponent *)commentComponentByPreprocessingString:(NSString *)string withFlags:(GBProcessingFlag)flags;
@@ -202,6 +203,7 @@ typedef NSUInteger GBProcessingFlag;
 		if ([self processAvailabilityBlockInString:string lines:lines blockRange:blockRange shortRange:shortRange]) return;
 		if ([self processRelatedBlockInString:string lines:lines blockRange:blockRange shortRange:shortRange]) return;
 		if ([self processConstantGroupBlockInString:string lines:lines blockRange:blockRange shortRange:shortRange]) return;
+		if ([self processOwnerBlockInString:string lines:lines blockRange:blockRange shortRange:shortRange]) return;
 		
 		GBLogXWarn(self.currentSourceInfo, @"Unknown directive block %@ encountered at %@, processing as standard text!", [[lines firstObject] normalizedDescription], self.currentSourceInfo);
 	}
@@ -419,6 +421,18 @@ typedef NSUInteger GBProcessingFlag;
 	return YES;
 }
 
+- (BOOL)processOwnerBlockInString:(NSString *)string lines:(NSArray *)lines blockRange:(NSRange)blockRange shortRange:(NSRange)shortRange {
+	NSArray *components = [string captureComponentsMatchedByRegex:self.components.ownerRegex];
+	if ([components count] == 0) return NO;
+	
+	// Get data from captures. Index 1 is directive, index 2 name
+	NSString *name = [components objectAtIndex:2];
+	if ([name length])  {
+		[self.currentComment setOwnerName:name];
+	}
+	return YES;
+}
+
 - (BOOL)isLineMatchingDirectiveStatement:(NSString *)string {
 	if ([string isMatchedByRegex:self.components.warningSectionRegex]) return YES;
 	if ([string isMatchedByRegex:self.components.bugSectionRegex]) return YES;
@@ -428,6 +442,7 @@ typedef NSUInteger GBProcessingFlag;
 	if ([string isMatchedByRegex:self.components.availabilityRegex]) return YES;
 	if ([string isMatchedByRegex:self.components.relatedSymbolRegex]) return YES;
 	if ([string isMatchedByRegex:self.components.constantGroupRegex]) return YES;
+	if ([string isMatchedByRegex:self.components.ownerRegex]) return YES;
 	return NO;
 }
 

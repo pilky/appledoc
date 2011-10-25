@@ -6,14 +6,15 @@
 //  Copyright 2011 Gentle Bytes. All rights reserved.
 //
 
-#warning Needs Documenting
+
 
 @class GBModelBase;
 
 typedef enum {
 	GBAdditionalInfoTypeConstant = 1,
 	GBAdditionalInfoTypeDataType = 2,
-	GBAdditionalInfoTypeFunction = 4
+	GBAdditionalInfoTypeFunction = 4,
+	GBAdditionalInfoTypeNotification = 8
 } GBAdditionalInfoType;
 
 @interface GBAdditionalInfoProvider : NSObject {
@@ -21,6 +22,7 @@ typedef enum {
 	NSMutableArray *_constants;
 	NSMutableArray *_dataTypes;
 	NSMutableArray *_functions;
+	NSMutableArray *_notifications;
 }
 
 - (void)registerAdditionalInfo:(GBModelBase *)info;
@@ -29,5 +31,11 @@ typedef enum {
 - (NSArray *)additionaInfoOfTypes:(GBAdditionalInfoType)aTypes;
 
 - (void)mergeDataFromAdditionalInfoProvider:(GBAdditionalInfoProvider *)source;
+
+@property (readonly) NSArray *classConstants;
+@property (readonly) NSArray *classNotifications;
+
+@property (readonly) BOOL hasClassConstants;
+@property (readonly) BOOL hasClassNotification;
 
 @end

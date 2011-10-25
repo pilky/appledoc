@@ -112,6 +112,12 @@
  */
 @property (retain) GBCommentComponentsList *availability;
 
+/** The name of the owner of the object
+ 
+ This is usually only used for additional info objects
+ */
+@property (retain) NSString *ownerName;
+
 ///---------------------------------------------------------------------------------------
 /// @name Output generator helpers
 ///---------------------------------------------------------------------------------------

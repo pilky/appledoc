@@ -84,6 +84,10 @@
 	GBRETURN_ON_DEMAND(@"^\\s*(\\Sconstantgroup\\s+)(.*)[\\n\\r]*((?s).*)");
 }
 
+- (NSString *)ownerRegex {
+	GBRETURN_ON_DEMAND(@"^\\s*(\\Sowner\\s+)([a-zA-Z0-9_]*)");
+}
+
 #pragma mark Markdown detection
 
 - (NSString *)markdownInlineLinkRegex {
