@@ -424,6 +424,7 @@
 	}
 	GBConstantData *constant = [GBConstantData constantDataWithName:[nameToken stringValue]];
 	[constant setCode:[[tokens componentsJoinedByString:@""] stringByAppendingString:@";"]];
+	[self registerSourceInfoFromCurrentTokenToObject:constant];
 	[[self constantGroup] addConstant:constant];
 	[self registerLastCommentToObject:constant];
 }
@@ -452,6 +453,7 @@
 		[self registerComment:self.tokenizer.previousComment toObject:group];
 		self.currentConstantGroup = group;
 		[self.store.additionalInfoProvider registerAdditionalInfo:group];
+		[self registerSourceInfoFromCurrentTokenToObject:group];
 		[self.additionalInfoObjects addObject:group];
 	}
 	return group;

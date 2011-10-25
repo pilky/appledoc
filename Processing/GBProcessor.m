@@ -21,7 +21,6 @@
 - (void)processDocuments;
 
 - (void)processMethodsFromProvider:(GBMethodsProvider *)provider;
-- (void)processConstantsFromObject:(GBModelBase *)object;
 - (void)processCommentForObject:(GBModelBase *)object;
 - (void)processParametersFromComment:(GBComment *)comment matchingMethod:(GBMethodData *)method;
 - (void)processHtmlReferencesForObject:(GBModelBase *)object;
@@ -84,10 +83,17 @@
 }
 
 - (void)processAdditionalInfo {
-	for (GBConstantGroupData *constant in [self.store.additionalInfoProvider additionaInfoOfTypes:GBAdditionalInfoTypeConstant]) {
-		[self processCommentForObject:constant];
-		[self validateCommentsForObject:constant];
-		[self processHtmlReferencesForObject:constant];
+	for (GBConstantGroupData *constantGroup in [self.store.additionalInfoProvider additionaInfoOfTypes:GBAdditionalInfoTypeConstant]) {
+		[self processCommentForObject:constantGroup];
+		[self validateCommentsForObject:constantGroup];
+		[self processHtmlReferencesForObject:constantGroup];
+		for (GBConstantData *constant in constantGroup.constants) {
+			[self processCommentForObject:constant];
+			[self validateCommentsForObject:constant];
+			[self processHtmlReferencesForObject:constant];
+			NSLog(@"%@", [constant name]);
+			NSLog(@"isprocessed:%@", constant.comment.shortDescription.stringValue);
+		}
 	}
 }
 

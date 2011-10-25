@@ -58,6 +58,7 @@ typedef NSUInteger GBProcessingFlag;
 @interface GBCommentsProcessor ()
 
 - (void)processCommentBlockInLines:(NSArray *)lines blockRange:(NSRange)blockRange shortRange:(NSRange)shortRange;
+- (void)updateDescriptionsWithLines:(NSArray *)lines blockRange:(NSRange)blockRange shortRange:(NSRange)shortRange removePrefix:(NSString *)prefix;
 - (void)registerShortDescriptionFromLines:(NSArray *)lines range:(NSRange)range removePrefix:(NSString *)remove;
 - (void)reserveShortDescriptionFromLines:(NSArray *)lines range:(NSRange)range removePrefix:(NSString *)remove;
 - (void)registerReservedShortDescriptionIfNecessary;
@@ -204,10 +205,15 @@ typedef NSUInteger GBProcessingFlag;
 		
 		GBLogXWarn(self.currentSourceInfo, @"Unknown directive block %@ encountered at %@, processing as standard text!", [[lines firstObject] normalizedDescription], self.currentSourceInfo);
 	}
-		
+	
+	[self updateDescriptionsWithLines:lines blockRange:blockRange shortRange:shortRange removePrefix:nil];
+}
+
+- (void)updateDescriptionsWithLines:(NSArray *)lines blockRange:(NSRange)blockRange shortRange:(NSRange)shortRange removePrefix:(NSString *)prefix {
+	NSArray *block = [lines subarrayWithRange:blockRange];
 	// Handle short description and update block range if we're not repeating first paragraph.
 	if (!self.currentComment.shortDescription) {
-		[self registerShortDescriptionFromLines:lines range:shortRange removePrefix:nil];
+		[self registerShortDescriptionFromLines:lines range:shortRange removePrefix:prefix];
 		if (!self.settings.repeatFirstParagraphForMemberDescription && !self.alwaysRepeatFirstParagraph) {
 			blockRange.location += shortRange.length;
 			blockRange.length -= shortRange.length;
@@ -409,11 +415,7 @@ typedef NSUInteger GBProcessingFlag;
 	
 	NSString *prefix = [string substringToIndex:[string rangeOfString:description].location];
 	GBLogDebug(@"- Registering parameter %@ description %@ at %@...", name, [description normalizedDescription], self.currentSourceInfo);
-	[self reserveShortDescriptionFromLines:lines range:shortRange removePrefix:prefix];
-	
-	// Prepare object representation from the description and register the result to the comment.
-	GBCommentComponent *component = [self commentComponentByPreprocessingString:description withFlags:0];
-	[self.currentComment.longDescription registerComponent:component];
+	[self updateDescriptionsWithLines:lines blockRange:blockRange shortRange:shortRange removePrefix:prefix];
 	return YES;
 }
 

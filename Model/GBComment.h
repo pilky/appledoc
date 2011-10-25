@@ -75,6 +75,7 @@
  */
 @property (retain) GBCommentComponentsList *longDescription;
 
+
 /** The list to related items.
  
  This is simply a list of `GBCommentComponent`s, each one containing a cross reference to a single item.
