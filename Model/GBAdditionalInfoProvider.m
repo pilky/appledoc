@@ -27,17 +27,32 @@
 	if ([info isKindOfClass:[GBConstantGroupData class]]) {
 		[_constants addObject:info];
 		[_constants sortUsingDescriptors:[NSArray arrayWithObject:[NSSortDescriptor sortDescriptorWithKey:@"name" ascending:YES]]];
+	} else if ([info isKindOfClass:[GBNotificationData class]]) {
+		[_notifications addObject:info];
+		[_notifications sortUsingDescriptors:[NSArray arrayWithObject:[NSSortDescriptor sortDescriptorWithKey:@"name" ascending:YES]]];
 	}
 }
 
 - (void)unregisterAdditionalInfo:(GBModelBase *)info {
 	if ([info isKindOfClass:[GBConstantGroupData class]]) {
 		[_constants removeObject:info];
+	} else if ([info isKindOfClass:[GBNotificationData class]]) {
+		[_notifications removeObject:info];
 	}
 }
 
 - (NSArray *)additionaInfoOfTypes:(GBAdditionalInfoType)aTypes {
-	return [_constants copy];
+	NSMutableArray *returnValue = [NSMutableArray array];
+	if (aTypes & GBAdditionalInfoTypeConstant) {
+		[returnValue addObjectsFromArray:[_constants copy]];
+		if (aTypes == GBAdditionalInfoTypeConstant) return returnValue;
+	}
+	if (aTypes & GBAdditionalInfoTypeNotification) {
+		[returnValue addObjectsFromArray:[_notifications copy]];
+		if (aTypes == GBAdditionalInfoTypeNotification) return returnValue;
+	}
+	[returnValue sortUsingDescriptors:[NSArray arrayWithObject:[NSSortDescriptor sortDescriptorWithKey:@"name" ascending:YES]]];
+	return returnValue;
 }
 
 - (void)mergeDataFromAdditionalInfoProvider:(GBAdditionalInfoProvider *)source {
@@ -48,7 +63,7 @@
 	return [self additionaInfoOfTypes:GBAdditionalInfoTypeConstant|GBAdditionalInfoTypeDataType];
 }
 
-- (NSArray *)classNotifications {
+- (NSArray *)notifications {
 	return [self additionaInfoOfTypes:GBAdditionalInfoTypeNotification];
 }
 
@@ -56,7 +71,7 @@
 	return ([_constants count] + [_dataTypes count]) > 0;
 }
 
-- (BOOL)hasClassNotification {
+- (BOOL)hasNotifications {
 	return [_notifications count] > 0;
 }
 

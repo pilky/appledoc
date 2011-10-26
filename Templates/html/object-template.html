@@ -160,6 +160,46 @@
 						{{/classConstants}}
 					</div>
 					{{/hasClassConstants}}
+					
+					
+					{{#hasNotifications}}
+					<div class="section section-notifications">
+						<a title="{{strings/objectMethods/notificationsTitle}}" name="constants"></a>
+						<h2 class="subtitle subtitle-methods">{{strings/objectMethods/notificationsTitle}}</h2>
+						{{#notifications}}
+						<a name="{{htmlReferenceName}}" title="{{name}}"></a>
+						<h3 class="subsubtitle method-title">{{name}}</h3>
+						{{#comment}}
+						{{#hasShortDescription}}
+						<div class="method-subsection brief-description">
+							{{#shortDescription}}{{>GBCommentComponent}}{{/shortDescription}}
+							{{#longDescription}}{{>GBCommentComponentsList}}{{/longDescription}}
+						</div>		
+						{{/hasShortDescription}}
+						
+						{{#hasAvailability}}
+						<div class="method-subsection availability">
+							<h4 class="method-subtitle parameter-title">{{strings/objectMethods/availability}}</h4>
+							{{#availability}}{{>GBCommentComponentsList}}{{/availability}}
+						</div>
+						{{/hasAvailability}}
+						
+						{{#hasRelatedItems}}
+						<div class="method-subsection see-also-section">
+							<h4 class="method-subtitle">{{strings/objectMethods/seeAlsoTitle}}</h4>
+							<ul>
+								{{#relatedItems/components}}
+								<li><code>{{>GBCommentComponent}}</code></li>
+								{{/relatedItems/components}}
+							</ul>
+						</div>
+						{{/hasRelatedItems}}
+						
+						{{/comment}}
+						{{/notifications}}
+					</div>
+					{{/hasNotifications}}
+					
 					{{/object/additionalInfo}}
 				</div>
 				<div class="main-navigation navigation-bottom">
@@ -479,5 +519,13 @@ Section TableOfContents
 	{{/classConstants}}
 </ul></li>
 {{/hasClassConstants}}
+
+{{#hasNotifications}}
+<li role="treeitem" class="children"><span class="disclosure"></span><span class="sectionName"><a href="#notifications">{{strings/objectMethods/notificationsTitle}}</a></span><ul>
+	{{#notifications}}
+	<li><span class="nodisclosure"></span><span class="sectionName"><a href="#{{htmlReferenceName}}">{{name}}</a></span></li>
+	{{/notifications}}
+</ul></li>
+{{/hasNotifications}}
 {{/object/additionalInfo}}
 EndSection

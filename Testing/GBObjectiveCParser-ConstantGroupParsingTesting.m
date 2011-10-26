@@ -23,18 +23,13 @@
 	GBStore *store = [[GBStore alloc] init];
 	// execute
 	[parser parseObjectsFromString:@"extern NSString *foo;" sourceFile:@"filename.h" toStore:store];
-	NSLog(@"=======");
 	[parser parseObjectsFromString:@"extern NSString * foo; extern NSString * foo;" sourceFile:@"filename.h" toStore:store];
-	NSLog(@"=======");
 	[parser parseObjectsFromString:@"/** @constants My Constants */\n/** Foo does this */\nextern int foo;" sourceFile:@"filename.h" toStore:store];
-	NSLog(@"=======");
 	[parser parseObjectsFromString:@"extern BOOL (^foo)(id bar, id baz);" sourceFile:@"filename.h" toStore:store];
 	// verify
 //	NSArray *protocols = [[[[store classes] anyObject] adoptedProtocols] protocolsSortedByName];
 //	assertThatInteger([protocols count], equalToInteger(1));
 //	assertThat([[protocols objectAtIndex:0] nameOfProtocol], is(@"MyProtocol"));
-	NSLog(@"%@", [store constants]);
-	NSLog(@"%@", [store valueForKeyPath:@"constants.constants.code"]);
 }
 
 @end

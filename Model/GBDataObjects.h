@@ -24,6 +24,7 @@
 
 #import "GBConstantGroupData.h"
 #import "GBConstantData.h"
+#import "GBNotificationData.h"
 
 #import "GBAdoptedProtocolsProvider.h"
 #import "GBIvarsProvider.h"

@@ -80,6 +80,7 @@
 		[result setObject:@"See Also" forKey:@"seeAlsoTitle"];
 		[result setObject:@"Declared In" forKey:@"declaredInTitle"];
 		[result setObject:@"Constants" forKey:@"constantsTitle"];
+		[result setObject:@"Notifications" forKey:@"notificationsTitle"];
 	}
 	return result;
 }

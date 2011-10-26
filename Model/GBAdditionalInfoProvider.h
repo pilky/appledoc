@@ -33,9 +33,9 @@ typedef enum {
 - (void)mergeDataFromAdditionalInfoProvider:(GBAdditionalInfoProvider *)source;
 
 @property (readonly) NSArray *classConstants;
-@property (readonly) NSArray *classNotifications;
+@property (readonly) NSArray *notifications;
 
 @property (readonly) BOOL hasClassConstants;
-@property (readonly) BOOL hasClassNotification;
+@property (readonly) BOOL hasNotifications;
 
 @end

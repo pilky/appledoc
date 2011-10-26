@@ -217,6 +217,8 @@
 		999CAB4D145591F000EB49FF /* GBConstantData.m in Sources */ = {isa = PBXBuildFile; fileRef = 999CAB431455872C00EB49FF /* GBConstantData.m */; };
 		999CAB861455EA9B00EB49FF /* GBAdditionalInfoProvider.m in Sources */ = {isa = PBXBuildFile; fileRef = 999CAB851455EA9B00EB49FF /* GBAdditionalInfoProvider.m */; };
 		999CAB871455EA9B00EB49FF /* GBAdditionalInfoProvider.m in Sources */ = {isa = PBXBuildFile; fileRef = 999CAB851455EA9B00EB49FF /* GBAdditionalInfoProvider.m */; };
+		999CAB8A14585B5200EB49FF /* GBNotificationData.m in Sources */ = {isa = PBXBuildFile; fileRef = 999CAB8914585B5100EB49FF /* GBNotificationData.m */; };
+		999CAB8B14585B5200EB49FF /* GBNotificationData.m in Sources */ = {isa = PBXBuildFile; fileRef = 999CAB8914585B5100EB49FF /* GBNotificationData.m */; };
 		99EA07FD14546AE300A7CEE9 /* GBObjectiveCParser-ConstantGroupParsingTesting.m in Sources */ = {isa = PBXBuildFile; fileRef = 99EA07FC14546AE300A7CEE9 /* GBObjectiveCParser-ConstantGroupParsingTesting.m */; };
 /* End PBXBuildFile section */
 
@@ -503,6 +505,8 @@
 		999CAB431455872C00EB49FF /* GBConstantData.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GBConstantData.m; sourceTree = "<group>"; };
 		999CAB841455EA9B00EB49FF /* GBAdditionalInfoProvider.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GBAdditionalInfoProvider.h; sourceTree = "<group>"; };
 		999CAB851455EA9B00EB49FF /* GBAdditionalInfoProvider.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GBAdditionalInfoProvider.m; sourceTree = "<group>"; };
+		999CAB8814585B5100EB49FF /* GBNotificationData.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GBNotificationData.h; sourceTree = "<group>"; };
+		999CAB8914585B5100EB49FF /* GBNotificationData.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GBNotificationData.m; sourceTree = "<group>"; };
 		99EA07FC14546AE300A7CEE9 /* GBObjectiveCParser-ConstantGroupParsingTesting.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "GBObjectiveCParser-ConstantGroupParsingTesting.m"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -869,6 +873,8 @@
 				999CAB3F145580F100EB49FF /* GBConstantGroupData.m */,
 				999CAB421455872C00EB49FF /* GBConstantData.h */,
 				999CAB431455872C00EB49FF /* GBConstantData.m */,
+				999CAB8814585B5100EB49FF /* GBNotificationData.h */,
+				999CAB8914585B5100EB49FF /* GBNotificationData.m */,
 			);
 			name = Store;
 			sourceTree = "<group>";
@@ -1277,6 +1283,7 @@
 				999CAB4C145591F000EB49FF /* GBConstantGroupData.m in Sources */,
 				999CAB4D145591F000EB49FF /* GBConstantData.m in Sources */,
 				999CAB871455EA9B00EB49FF /* GBAdditionalInfoProvider.m in Sources */,
+				999CAB8B14585B5200EB49FF /* GBNotificationData.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1362,6 +1369,7 @@
 				999CAB40145580F100EB49FF /* GBConstantGroupData.m in Sources */,
 				999CAB441455872D00EB49FF /* GBConstantData.m in Sources */,
 				999CAB861455EA9B00EB49FF /* GBAdditionalInfoProvider.m in Sources */,
+				999CAB8A14585B5200EB49FF /* GBNotificationData.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

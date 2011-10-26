@@ -24,6 +24,7 @@
 - (void)processCommentForObject:(GBModelBase *)object;
 - (void)processParametersFromComment:(GBComment *)comment matchingMethod:(GBMethodData *)method;
 - (void)processHtmlReferencesForObject:(GBModelBase *)object;
+- (void)processOwnerForObject:(id)object;
 - (void)copyKnownDocumentationForMethod:(GBMethodData *)method;
 
 - (BOOL)removeUndocumentedObject:(id)object;
@@ -91,25 +92,20 @@
 			[self processCommentForObject:constant];
 			[self validateCommentsForObject:constant];
 			[self processHtmlReferencesForObject:constant];
-			NSLog(@"constant:%@ %@", [constant name], [constant comment]);
 		}
-		NSString *ownerName = [[constantGroup comment] ownerName];
-		if (ownerName || [constantGroup owner]) {
-			[self.store.additionalInfoProvider unregisterAdditionalInfo:constantGroup];
-			id newOwner = [constantGroup owner];
-			if (ownerName) {
-				newOwner = [self.store classWithName:ownerName];
-				if (!newOwner) {
-					newOwner = [self.store protocolWithName:ownerName];
-				}
-				if (!newOwner) {
-					newOwner = [self.store categoryWithName:ownerName];
-				}
-			}
-			[[newOwner additionalInfo] registerAdditionalInfo:constantGroup];
-		}
+		[self processOwnerForObject:constantGroup];
+	}
+	
+	for (GBNotificationData *notification in [self.store.additionalInfoProvider additionaInfoOfTypes:GBAdditionalInfoTypeNotification]) {
+		[self processCommentForObject:notification];
+		[self validateCommentsForObject:notification];
+		[self processHtmlReferencesForObject:notification];
+		[self processOwnerForObject:notification];
+		NSLog(@"%@", [notification comment]);
 	}
 }
+
+
 
 - (void)processClasses {
 	// No need to process ivars as they are not used for output. Note that we need to iterate over a copy of objects to prevent problems when removing undocumented ones!
@@ -251,6 +247,25 @@
 	if ([names count] > 1) {
 		[comment.methodParameters removeAllObjects];
 		[comment.methodParameters addObjectsFromArray:sorted];
+	}
+}
+
+- (void)processOwnerForObject:(id)object {
+	NSString *ownerName = [(GBComment *)[object comment] ownerName];
+	if (ownerName || [object owner]) {
+		[self.store.additionalInfoProvider unregisterAdditionalInfo:object];
+		id newOwner = [object owner];
+		if (ownerName) {
+			newOwner = [self.store classWithName:ownerName];
+			if (!newOwner) {
+				newOwner = [self.store protocolWithName:ownerName];
+			}
+			if (!newOwner) {
+				newOwner = [self.store categoryWithName:ownerName];
+			}
+		}
+		[[newOwner additionalInfo] registerAdditionalInfo:object];
+		[object setOwner:newOwner];
 	}
 }
 

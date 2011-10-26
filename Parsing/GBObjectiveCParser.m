@@ -57,6 +57,7 @@
 
 - (void)matchExtern;
 - (void)matchDefine;
+- (void)matchNotificationWithName:(NSString *)aName;
 - (void)matchEnum;
 - (void)matchStruct;
 - (void)matchTypeDef;
@@ -422,6 +423,11 @@
 	if (!nameToken) {
 		nameToken = [tokens lastObject];
 	}
+	if ([[nameToken stringValue] hasSuffix:@"Notification"]) {
+		[self matchNotificationWithName:[nameToken stringValue]];
+		return;
+	}
+	
 	GBConstantData *constant = [GBConstantData constantDataWithName:[nameToken stringValue]];
 	[self registerSourceInfoFromCurrentTokenToObject:constant];
 	GBConstantGroupData *group = [self constantGroup];
@@ -436,6 +442,14 @@
 
 - (void)matchDefine {
 	
+}
+
+- (void)matchNotificationWithName:(NSString *)aName {
+	GBNotificationData *notification = [GBNotificationData notificationWithName:aName];
+	[self registerLastCommentToObject:notification];
+	[self registerSourceInfoFromCurrentTokenToObject:notification];
+	[self.additionalInfoObjects addObject:notification];
+	[[self.store additionalInfoProvider] registerAdditionalInfo:notification];
 }
 
 - (void)matchEnum {
@@ -463,8 +477,6 @@
 		if (!constant && ![token isWhitespace]) {
 			constant = [GBConstantData constantDataWithName:[token stringValue]];
 			[self registerSourceInfoFromCurrentTokenToObject:constant];
-			NSLog(@"previousCOmment:%@", [self.tokenizer previousComment]);
-			NSLog(@"lastComment:%@", [self.tokenizer lastComment]);
 			[self registerLastCommentToObject:constant];
 			[group addConstant:constant];
 		}
