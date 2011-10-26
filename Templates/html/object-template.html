@@ -127,13 +127,15 @@
 						
 						{{/comment}}
 						
-						<pre class="constant-declaration">{{#constants}}{{code}}<br/>{{/constants}}</pre>
+						
+						{{#code}}<pre class="constant-declaration">{{code}}<br/></pre>{{/code}}
 						
 						<div class="method-subsection discussion-section">
 							<h4 class="method-subtitle">{{strings/objectMethods/constantsTitle}}</h4>
 							<dl class="constant-definitions">
 								{{#constants}}
 								<dt><code>{{name}}</code></dt>
+								{{#hasComment}}
 								<dd>
 									{{#comment}}
 									{{#shortDescription}}{{>GBCommentComponent}}{{/shortDescription}}
@@ -142,6 +144,7 @@
 									<p>{{#prefferedSourceInfo}}Declared in <code class="declared-in-ref">{{filename}}</code>{{/prefferedSourceInfo}}</p>
 									{{/comment}}
 								</dd>
+								{{/hasComment}}
 								{{/constants}}
 							</dl>
 						</div>

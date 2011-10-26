@@ -423,9 +423,14 @@
 		nameToken = [tokens lastObject];
 	}
 	GBConstantData *constant = [GBConstantData constantDataWithName:[nameToken stringValue]];
-	[constant setCode:[[tokens componentsJoinedByString:@""] stringByAppendingString:@";"]];
 	[self registerSourceInfoFromCurrentTokenToObject:constant];
-	[[self constantGroup] addConstant:constant];
+	GBConstantGroupData *group = [self constantGroup];
+	[group addConstant:constant];
+	if ([[group code] length]) {
+		[group appendCode:[NSString stringWithFormat:@"\n%@", [tokens componentsJoinedByString:@""]]];
+	} else {
+		[group appendCode:[tokens componentsJoinedByString:@""]];
+	}
 	[self registerLastCommentToObject:constant];
 }
 
@@ -435,6 +440,62 @@
 
 - (void)matchEnum {
 	self.currentConstantGroup = nil;
+	
+	GBConstantGroupData *group = [GBConstantGroupData constantGroupWithName:nil];
+	[self.store.additionalInfoProvider registerAdditionalInfo:group];
+	[self.additionalInfoObjects addObject:group];
+	[self registerLastCommentToObject:group];
+	[self registerSourceInfoFromCurrentTokenToObject:group];
+	
+	//Try to get the name and skip to the constants
+	BOOL isTypeDef = [[self.tokenizer currentToken] matches:@"typedef"];
+	PKToken *nameToken = [self.tokenizer lookahead:1];
+
+	[self.tokenizer consumeTo:@"{" options:GBTokenizerIncludeWhitespace usingBlock:^(PKToken *token, BOOL *consume, BOOL *stop) {
+		[group appendCode:[token stringValue]];
+	}];
+	[group appendCode:@"{"];
+	
+	//Get the constants
+	__block GBConstantData *constant = nil; 
+	//Consume the constants
+	[self.tokenizer consumeTo:@"}" options:GBTokenizerIncludeWhitespace usingBlock:^(PKToken *token, BOOL *consume, BOOL *stop) {
+		if (!constant && ![token isWhitespace]) {
+			constant = [GBConstantData constantDataWithName:[token stringValue]];
+			[self registerSourceInfoFromCurrentTokenToObject:constant];
+			NSLog(@"previousCOmment:%@", [self.tokenizer previousComment]);
+			NSLog(@"lastComment:%@", [self.tokenizer lastComment]);
+			[self registerLastCommentToObject:constant];
+			[group addConstant:constant];
+		}
+		if ([token matches:@","]) {
+			constant = nil;
+		}
+		[group appendCode:[token stringValue]];
+	}];
+	[group appendCode:@"}"];
+	
+	//If we're a typedef get the name
+	if (isTypeDef) {
+		nameToken = [self.tokenizer lookahead:0];
+	}
+	
+	//Consume to the end
+	[self.tokenizer consumeTo:@";" options:GBTokenizerIncludeWhitespace usingBlock:^(PKToken *token, BOOL *consume, BOOL *stop) {
+		[group appendCode:[token stringValue]];
+	}];
+	[group appendCode:@";"];
+	
+	//See if the next token in a typedef and we're not already typedefd to get the name;
+	if (!isTypeDef && [[self.tokenizer lookahead:0] matches:@"typedef"]) {
+		nameToken = [self.tokenizer lookahead:2];
+		[self.tokenizer consumeTo:@";" options:GBTokenizerIncludeWhitespace usingBlock:^(PKToken *token, BOOL *consume, BOOL *stop) {
+			[group appendCode:[token stringValue]];
+		}];
+		[group appendCode:@";"];
+	}
+	
+	[group setName:[nameToken stringValue]];
 }
 
 - (void)matchStruct {
@@ -530,8 +591,13 @@
 }
 
 - (BOOL)matchAdditionalInfo {
-	if ([[self.tokenizer currentToken] matches:@"extern"]) {
+	PKToken *currentToken = [self.tokenizer currentToken];
+	if ([currentToken matches:@"extern"]) {
 		[self matchExtern];
+		return YES;
+	}
+	if ([currentToken matches:@"enum"] || ([currentToken matches:@"typedef"] && [[self.tokenizer lookahead:1] matches:@"enum"])) {
+		[self matchEnum];
 		return YES;
 	}
 	return NO;

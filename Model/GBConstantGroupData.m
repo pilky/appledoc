@@ -12,6 +12,7 @@
 
 @synthesize owner;
 @synthesize name;
+@synthesize code;
 
 + (id)constantGroupWithName:(NSString *)name {
 	return [[self alloc] initWithName:name];
@@ -24,6 +25,7 @@
 			name = @"Untitled Constant Group";
 		}
 		_constants = [NSMutableArray array];
+		code = @"";
 	}
 	return self;
 }
@@ -34,6 +36,11 @@
 
 - (void)addConstant:(GBConstantData *)aConstant {
 	[_constants addObject:aConstant];
+}
+
+- (void)appendCode:(NSString *)aCode {
+	NSString *codeToAdd = [aCode stringByReplacingOccurrencesOfString:@"\t" withString:@"    "];
+	[self setCode:[[self code] stringByAppendingString:codeToAdd]];
 }
 
 

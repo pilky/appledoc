@@ -10,7 +10,7 @@
 
 @implementation GBConstantData
 
-@synthesize name, code;
+@synthesize name;
 
 + (id)constantDataWithName:(NSString *)aName {
 	return [[self alloc] initWithName:aName];
@@ -21,6 +21,10 @@
 		name = [aName copy];
 	}
 	return self;
+}
+
+- (BOOL)hasComment {
+	return [self comment] != nil;
 }
 
 @end

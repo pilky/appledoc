@@ -106,7 +106,6 @@
     for (NSUInteger index = self.tokenIndex; index < tokenCount; ++index) {
         PKToken *token = [self.tokens objectAtIndex:index];
 		if ([token isComment] || ([token isWhitespace] && ignoreWhitespace)) {
-			index++;
 			continue;
 		}
 		if ([token matches:end]) {

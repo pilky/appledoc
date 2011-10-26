@@ -91,7 +91,7 @@
 			[self processCommentForObject:constant];
 			[self validateCommentsForObject:constant];
 			[self processHtmlReferencesForObject:constant];
-			
+			NSLog(@"constant:%@ %@", [constant name], [constant comment]);
 		}
 		NSString *ownerName = [[constantGroup comment] ownerName];
 		if (ownerName || [constantGroup owner]) {

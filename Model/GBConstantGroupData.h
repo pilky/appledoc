@@ -17,10 +17,12 @@
 + (id)constantGroupWithName:(NSString *)name;
 - (id)initWithName:(NSString *)name;
 
-@property (readonly) NSString *name;
+@property (copy) NSString *name;
 @property (readonly) NSArray *constants;
 @property (retain) GBModelBase *owner;
+@property (copy) NSString *code;
 
 - (void)addConstant:(GBConstantData *)aConstant;
+- (void)appendCode:(NSString *)aCode;
 
 @end
