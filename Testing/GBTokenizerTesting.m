@@ -56,14 +56,15 @@
 	assertThat([tokenizer2.lastComment stringValue], is(@"comment"));
 }
 
-- (void)testInitWithTokenizer_shouldUseLastPathComponentAsFilename {
-	// setup & execute
-	GBTokenizer *tokenizer1 = [GBTokenizer tokenizerWithSource:[self defaultTokenizer] filename:@"/Users/Path/to/filename.h"];
-	GBTokenizer *tokenizer2 = [GBTokenizer tokenizerWithSource:[self defaultTokenizer] filename:@"filename.h"];
-	// verify
-	assertThat([tokenizer1 valueForKey:@"filename"], is(@"filename.h"));
-	assertThat([tokenizer2 valueForKey:@"filename"], is(@"filename.h"));
-}
+//I think this test should be removed as for Xcode integration to work we don't want just the last path component
+//- (void)testInitWithTokenizer_shouldUseLastPathComponentAsFilename {
+//	// setup & execute
+//	GBTokenizer *tokenizer1 = [GBTokenizer tokenizerWithSource:[self defaultTokenizer] filename:@"/Users/Path/to/filename.h"];
+//	GBTokenizer *tokenizer2 = [GBTokenizer tokenizerWithSource:[self defaultTokenizer] filename:@"filename.h"];
+//	// verify
+//	assertThat([tokenizer1 valueForKey:@"filename"], is(@"filename.h"));
+//	assertThat([tokenizer2 valueForKey:@"filename"], is(@"filename.h"));
+//}
 
 #pragma mark Lookahead testing
 
