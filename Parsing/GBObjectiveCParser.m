@@ -761,6 +761,8 @@
 }
 
 - (void)registerSourceInfoFromCurrentTokenToObject:(GBModelBase *)object {
+	if (self.tokenizer.eof)
+		return;
 	GBSourceInfo *info = [self.tokenizer sourceInfoForCurrentToken];
 	[object registerSourceInfo:info];
 }

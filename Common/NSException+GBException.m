@@ -25,7 +25,7 @@
 	va_end(args);
 }
 
-+ (void)raise:(NSError *)error format:(NSString *)format, ... {
++ (void)raise:(id)error format:(NSString *)format, ... {
 	NSString *message = nil;
 	if (format) {
 		va_list args;
@@ -34,7 +34,12 @@
 		va_end(args);
 	}
 	
-	NSString *reason = [self reasonWithError:error message:message];
+	NSString *reason = nil;
+	if ([error isKindOfClass:[NSError class]]) {
+		reason = [self reasonWithError:error message:message];
+	} else {
+		reason = error;
+	}
 	[self raise:reason];
 }
 

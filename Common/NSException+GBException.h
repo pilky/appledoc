@@ -35,6 +35,6 @@
  @param ... A comma separated list of arguments to substitute into the format.
  @exception NSException Always thrown ;)
  */
-+ (void)raise:(NSError *)error format:(NSString *)format, ...;
++ (void)raise:(id)error format:(NSString *)format, ...;
 
 @end

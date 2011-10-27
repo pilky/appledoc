@@ -28,6 +28,7 @@
 		[result setObject:@"%@ Methods" forKey:@"mergedCategorySectionTitle"];
 		[result setObject:@"Extension Methods" forKey:@"mergedExtensionSectionTitle"];
 		[result setObject:@"%2$@ from %1$@" forKey:@"mergedPrefixedCategorySectionTitle"];
+		[result setObject:@"" forKey:@"libraryTitlePostfix"];
 	}
 	return result;
 }

@@ -54,3 +54,24 @@
 - (void)parseObjectsFromString:(NSString *)input sourceFile:(NSString *)filename toStore:(id)store;
 
 @end
+
+
+
+
+/* TODO
+
+- Notifications need user info
+- Undocumented items aren't removed
+- #define constants
+- #define macros
+- C functions
+- typedefs
+- Project constants/functions/data types pages
+- Index page
+- Doc set index
+- links between items
+- links in constant code
+- tests for tokenizer changes, parser changes, processor changes and generator changes
+- documenting
+ 
+ */
