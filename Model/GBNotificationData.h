@@ -13,7 +13,7 @@
 + (id)notificationWithName:(NSString *)name;
 - (id)initWithName:(NSString *)name;
 
-@property (readonly) NSString *name;
+@property (copy) NSString *name;
 @property (retain) GBModelBase *owner;
 
 @end

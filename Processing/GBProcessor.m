@@ -29,6 +29,8 @@
 
 - (BOOL)removeUndocumentedObject:(id)object;
 - (BOOL)removeUndocumentedMember:(GBMethodData *)object;
+- (BOOL)removeUndocumentedConstantGroup:(GBConstantGroupData *)object;
+- (BOOL)removeUndocumentedNotification:(GBNotificationData *)object;
 
 - (void)setupKnownObjectsFromStore;
 - (void)mergeKnownCategoriesFromStore;
@@ -84,7 +86,10 @@
 }
 
 - (void)processAdditionalInfo {
-	for (GBConstantGroupData *constantGroup in [self.store.additionalInfoProvider additionaInfoOfTypes:GBAdditionalInfoTypeConstant]) {
+	for (GBConstantGroupData *constantGroup in [self.store.additionalInfo additionaInfoOfTypes:GBAdditionalInfoTypeConstant]) {
+		if ([self removeUndocumentedConstantGroup:constantGroup]) 
+			continue;
+		
 		[self processCommentForObject:constantGroup];
 		[self validateCommentsForObject:constantGroup];
 		[self processHtmlReferencesForObject:constantGroup];
@@ -96,12 +101,14 @@
 		[self processOwnerForObject:constantGroup];
 	}
 	
-	for (GBNotificationData *notification in [self.store.additionalInfoProvider additionaInfoOfTypes:GBAdditionalInfoTypeNotification]) {
+	for (GBNotificationData *notification in [self.store.additionalInfo additionaInfoOfTypes:GBAdditionalInfoTypeNotification]) {
+		if ([self removeUndocumentedNotification:notification]) 
+			continue;
+		
 		[self processCommentForObject:notification];
 		[self validateCommentsForObject:notification];
 		[self processHtmlReferencesForObject:notification];
 		[self processOwnerForObject:notification];
-		NSLog(@"%@", [notification comment]);
 	}
 }
 
@@ -253,7 +260,7 @@
 - (void)processOwnerForObject:(id)object {
 	NSString *ownerName = [(GBComment *)[object comment] ownerName];
 	if (ownerName || [object owner]) {
-		[self.store.additionalInfoProvider unregisterAdditionalInfo:object];
+		[self.store.additionalInfo unregisterAdditionalInfo:object];
 		id newOwner = [object owner];
 		if (ownerName) {
 			newOwner = [self.store classWithName:ownerName];
@@ -335,6 +342,34 @@
 	GBMethodsProvider *provider = [(id<GBObjectDataProviding>)object.parentObject methods];
 	[provider unregisterMethod:object];
 	[provider unregisterEmptySections];	
+	return YES;
+}
+
+- (BOOL)removeUndocumentedConstantGroup:(GBConstantGroupData *)object {
+	//Removes the given constant group item if it's not commented and returns YES if removed, NO otherwise
+	if (self.settings.keepUndocumentedMembers) return NO;
+	if ([self isCommentValid:object.comment]) return NO;
+	
+	for (GBConstantData *data in object.constants) {
+		if ([self isCommentValid:data.comment]) {
+			return NO;
+		}
+	}
+	
+	GBLogVerbose(@"Removing undocumented constant group %@...", object);
+	GBAdditionalInfoProvider *provider = [(id<GBObjectDataProviding>)object.owner additionalInfo];
+	[provider unregisterAdditionalInfo:object];
+	return YES;
+}
+
+- (BOOL)removeUndocumentedNotification:(GBNotificationData *)object {
+	//Removes the given notification item if it's not commented and returns YES if removed, NO otherwise
+	if (self.settings.keepUndocumentedMembers) return NO;
+	if ([self isCommentValid:object.comment]) return NO;
+	
+	GBLogVerbose(@"Removing undocumented notification %@...", object);
+	GBAdditionalInfoProvider *provider = [(id<GBObjectDataProviding>)object.owner additionalInfo];
+	[provider unregisterAdditionalInfo:object];
 	return YES;
 }
 

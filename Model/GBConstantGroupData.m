@@ -36,11 +36,16 @@
 
 - (void)addConstant:(GBConstantData *)aConstant {
 	[_constants addObject:aConstant];
+	[aConstant setOwner:self];
 }
 
 - (void)appendCode:(NSString *)aCode {
 	NSString *codeToAdd = [aCode stringByReplacingOccurrencesOfString:@"\t" withString:@"    "];
 	[self setCode:[[self code] stringByAppendingString:codeToAdd]];
+}
+
+- (NSString *)description {
+	return self.name;
 }
 
 

@@ -10,7 +10,7 @@
 
 @class GBConstantData;
 
-@interface GBConstantGroupData : GBModelBase {
+@interface GBConstantGroupData : GBModelBase  {
 	NSMutableArray *_constants;
 }
 

@@ -14,7 +14,8 @@
 
 - (id)initWithName:(NSString *)aName;
 
-@property (readonly) NSString *name;
+@property (copy) NSString *name;
+@property (retain) GBModelBase *owner;
 @property (readonly) BOOL hasComment;
 
 @end

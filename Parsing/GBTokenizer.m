@@ -134,9 +134,6 @@
 			[self consumeWhitespace];
 		}
 		[self consumeComments];
-		if (ignoreWhitespace) {
-			[self consumeWhitespace];
-		}
 		count--;
 	}
 }
@@ -219,6 +216,7 @@
 	PKToken *startingPreviousToken = nil;
 	PKToken *startingLastToken = nil;
 	NSUInteger previousSingleLineEndOffset = 0;
+	PKToken *lastToken = nil;
 	while (![self eof] && ([[self currentToken] isComment])) {
 		PKToken *token = [self currentToken];
 		NSString *value = nil;
@@ -254,6 +252,7 @@
         if (value)
             [self.lastCommentBuilder appendString:value];
 		self.tokenIndex++;
+		lastToken = self.currentToken;
 		[self consumeWhitespace];
 	}
 	

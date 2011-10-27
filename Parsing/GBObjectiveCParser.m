@@ -449,14 +449,14 @@
 	[self registerLastCommentToObject:notification];
 	[self registerSourceInfoFromCurrentTokenToObject:notification];
 	[self.additionalInfoObjects addObject:notification];
-	[[self.store additionalInfoProvider] registerAdditionalInfo:notification];
+	[[self.store additionalInfo] registerAdditionalInfo:notification];
 }
 
 - (void)matchEnum {
 	self.currentConstantGroup = nil;
 	
 	GBConstantGroupData *group = [GBConstantGroupData constantGroupWithName:nil];
-	[self.store.additionalInfoProvider registerAdditionalInfo:group];
+	[self.store.additionalInfo registerAdditionalInfo:group];
 	[self.additionalInfoObjects addObject:group];
 	[self registerLastCommentToObject:group];
 	[self registerSourceInfoFromCurrentTokenToObject:group];
@@ -474,6 +474,7 @@
 	__block GBConstantData *constant = nil; 
 	//Consume the constants
 	[self.tokenizer consumeTo:@"}" options:GBTokenizerIncludeWhitespace usingBlock:^(PKToken *token, BOOL *consume, BOOL *stop) {
+		NSLog(@"%@", token);
 		if (!constant && ![token isWhitespace]) {
 			constant = [GBConstantData constantDataWithName:[token stringValue]];
 			[self registerSourceInfoFromCurrentTokenToObject:constant];
@@ -525,7 +526,7 @@
 		group = [GBConstantGroupData constantGroupWithName:[self constantGroupNameFromComment:self.tokenizer.previousComment]];
 		[self registerComment:self.tokenizer.previousComment toObject:group];
 		self.currentConstantGroup = group;
-		[self.store.additionalInfoProvider registerAdditionalInfo:group];
+		[self.store.additionalInfo registerAdditionalInfo:group];
 		[self registerSourceInfoFromCurrentTokenToObject:group];
 		[self.additionalInfoObjects addObject:group];
 	}

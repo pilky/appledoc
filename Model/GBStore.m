@@ -11,7 +11,7 @@
 
 @implementation GBStore
 
-@synthesize additionalInfoProvider;
+@synthesize additionalInfo;
 
 #pragma mark Initialization & disposal
 
@@ -161,11 +161,11 @@
 	return [_customDocumentsByKey objectForKey:key];
 }
 
-- (GBAdditionalInfoProvider *)additionalInfoProvider {
-	if (!additionalInfoProvider) {
-		additionalInfoProvider = [[GBAdditionalInfoProvider alloc] init];
+- (GBAdditionalInfoProvider *)additionalInfo {
+	if (!additionalInfo) {
+		additionalInfo = [[GBAdditionalInfoProvider alloc] init];
 	}
-	return additionalInfoProvider;
+	return additionalInfo;
 }
 
 @synthesize classes = _classes;

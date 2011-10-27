@@ -215,7 +215,7 @@
 @property (readonly) NSSet *customDocuments;
 
 #warning Needs Documenting
-@property (readonly) GBAdditionalInfoProvider *additionalInfoProvider;
+@property (readonly) GBAdditionalInfoProvider *additionalInfo;
 
 ///---------------------------------------------------------------------------------------
 /// @name Helper methods
