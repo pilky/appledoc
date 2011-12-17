@@ -17,12 +17,14 @@
 
 - (void)consumeWhitespace;
 - (BOOL)consumeComments;
-- (NSString *)commentValueFromString:(NSString *)value;
+- (NSString *)commentValueFromString:(NSString *)value isMultiline:(BOOL)multiline;
 - (NSArray *)allTokensFromTokenizer:(PKTokenizer *)tokenizer;
 @property (retain) NSString *filename;
 @property (retain) NSString *input;
 @property (retain) NSArray *tokens;
 @property (assign) NSUInteger tokenIndex;
+@property (assign) BOOL isLastCommentMultiline;
+@property (assign) BOOL isPreviousCommentMultiline;
 @property (retain) NSMutableString *lastCommentBuilder;
 @property (retain) NSMutableString *previousCommentBuilder;
 @property (retain) GBSourceInfo *lastCommentSourceInfo;
@@ -233,6 +235,8 @@
 				[self.previousCommentBuilder setString:self.lastCommentBuilder];
 				startingPreviousToken = startingLastToken;
 				[self.lastCommentBuilder setString:@""];
+				self.isPreviousCommentMultiline = self.isLastCommentMultiline;
+				self.isLastCommentMultiline = NO;
 				startingLastToken = token;
 			}
 			previousSingleLineEndOffset = [token offset] + [[token stringValue] length];
@@ -245,6 +249,8 @@
 			[self.previousCommentBuilder setString:self.lastCommentBuilder];
 			startingPreviousToken = startingLastToken;
 			[self.lastCommentBuilder setString:@""];
+			self.isPreviousCommentMultiline = self.isLastCommentMultiline;
+			self.isLastCommentMultiline = YES;
 			startingLastToken = token;
 		}
 		
@@ -276,7 +282,7 @@
 	return YES;
 }
 
-- (NSString *)commentValueFromString:(NSString *)value {
+- (NSString *)commentValueFromString:(NSString *)value isMultiline:(BOOL)multiline {
 	if ([value length] == 0) return nil;
 	NSArray *lines = [value componentsSeparatedByCharactersInSet:[NSCharacterSet newlineCharacterSet]];
 	NSMutableArray *comments = [NSMutableArray arrayWithCapacity:[lines count]];
@@ -291,7 +297,7 @@
 		}
 		[comments addObject:line];
 	}];
-	
+
 	// If all lines start with a *, ignore the prefix. Note that we ignore first line as it can only contain /** and text! We also ignore last line as if it only contains */
 	NSString *prefixRegex = @"(?m:^\\s*\\*[ ]*)";
 	__block BOOL stripPrefix = ([comments count] > 1);
@@ -301,7 +307,7 @@
 			if (idx == [comments count]-1 && [stripped length] == 0) {
 				return;
 			}
-			if (idx > 0 && ![stripped isMatchedByRegex:prefixRegex]) {
+			if ((!multiline || idx > 0) && ![stripped isMatchedByRegex:prefixRegex]) {
 				stripPrefix = NO;
 				*stop = YES;
 			}
@@ -333,13 +339,13 @@
 
 - (GBComment *)lastComment {
 	if ([self.lastCommentBuilder length] == 0) return nil;
-	NSString *value = [self commentValueFromString:self.lastCommentBuilder];
+	NSString *value = [self commentValueFromString:self.lastCommentBuilder isMultiline:self.isLastCommentMultiline];
 	return [GBComment commentWithStringValue:value sourceInfo:self.lastCommentSourceInfo];
 }
 
 - (GBComment *)previousComment {
 	if ([self.previousCommentBuilder length] == 0) return nil;
-	NSString *value = [self commentValueFromString:self.previousCommentBuilder];
+	NSString *value = [self commentValueFromString:self.previousCommentBuilder isMultiline:self.isPreviousCommentMultiline];
 	return [GBComment commentWithStringValue:value sourceInfo:self.previousCommentSourceInfo];
 }
 
@@ -372,6 +378,8 @@
 @synthesize previousComment;
 @synthesize previousCommentBuilder;
 @synthesize previousCommentSourceInfo;
+@synthesize isLastCommentMultiline;
+@synthesize isPreviousCommentMultiline;
 @synthesize singleLineCommentRegex;
 @synthesize multiLineCommentRegex;
 @synthesize commentDelimiterRegex;

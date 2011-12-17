@@ -47,6 +47,8 @@
     NSMutableArray *results = [NSMutableArray array];
     BOOL nextComponentIsBlockPropertyName = NO;
     BOOL nextComponentIsBlockReturnComponent = NO;
+	BOOL nextComponentIsPropertyName = NO;
+    BOOL inProtocolsList = NO;
     NSUInteger parenthesisLevel = 0;
     for (NSString *component in components) {
         if ([component isEqualToString:@"^"]) {
@@ -60,16 +62,31 @@
             if (parenthesisLevel > 0 || [component isEqualToString:@"("]) {
                 [results addObject:component];
             }
-        } else if ([component isMatchedByRegex:@"^[_a-zA-Z][_a-zA-Z0-9]*$"]) {
-            if (results.count == 0) {
+        } else if ([component isEqualToString:@"<"]) {
+            inProtocolsList = YES;
+            [results addObject:component];
+        } else if ([component isEqualToString:@">"]) {
+            inProtocolsList = NO;
+            [results addObject:component];
+		} else if ([component isEqualToString:@"*"]) {
+			[results addObject:component];
+			nextComponentIsPropertyName = YES;
+        } else if ([component isMatchedByRegex:@"^[_a-zA-Z][_a-zA-Z0-9]$"]) {
+			if (results.count == 0 || inProtocolsList) {
                 [results addObject:component];
-            } else if (propertyName == nil) {
+            } else if (propertyName == nil || nextComponentIsPropertyName) {
                 propertyName = component;
+				nextComponentIsPropertyName = NO;
             } else {
                 // ignore termination macro
             }
         } else if (propertyName == nil) {
-            [results addObject:component];
+			if (nextComponentIsPropertyName) {
+				propertyName = propertyName;
+				nextComponentIsPropertyName = NO;
+			} else {
+				[results addObject:component];
+			}
         }
         if ([component isEqualToString:@"("]) {
             ++parenthesisLevel;
@@ -77,6 +94,10 @@
             --parenthesisLevel;
         }
     }
+	
+	// In case we end up with no property name, just take the last component...
+	if (!propertyName) propertyName = [components lastObject];
+	if ([results containsObject:propertyName]) [results removeObject:propertyName];
     
 	GBMethodArgument *argument = [GBMethodArgument methodArgumentWithName:propertyName];
 	return [[[self alloc] initWithType:GBMethodTypeProperty attributes:attributes result:results arguments:[NSArray arrayWithObject:argument]] autorelease];
